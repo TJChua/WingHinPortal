@@ -19,7 +19,7 @@ namespace WingHinPortal.Module.BusinessObjects.PO
 {
     [DefaultClassOptions]
     //[Appearance("HideNew", AppearanceItemType.Action, "True", TargetItems = "New", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
-    [Appearance("HideDelete", AppearanceItemType.Action, "True", TargetItems = "Delete", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
+    //[Appearance("HideDelete", AppearanceItemType.Action, "True", TargetItems = "Delete", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
     [Appearance("LinkDoc", AppearanceItemType = "Action", TargetItems = "Link", Context = "ListView", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide)]
     [Appearance("UnlinkDoc", AppearanceItemType = "Action", TargetItems = "Unlink", Context = "ListView", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide)]
     [XafDisplayName("Purchase Order Details")]
@@ -37,6 +37,10 @@ namespace WingHinPortal.Module.BusinessObjects.PO
             if (user != null)
             {
                 CreateUser = Session.GetObjectByKey<SystemUsers>(user.Oid);
+                if (CreateUser.Staff.CostCenter != null)
+                {
+                    CostCenter = Session.FindObject<vwCostCenter>(new BinaryOperator("PrcCode", CreateUser.Staff.CostCenter.PrcCode));
+                }
             }
             CreateDate = DateTime.Now;
 
@@ -111,6 +115,7 @@ namespace WingHinPortal.Module.BusinessObjects.PO
                 if (!IsLoading && value != null)
                 {
                     ItemDesc = Item.ItemName;
+                    UOM = Item.UOM;
                     Tax = Session.FindObject<vwTax>(CriteriaOperator.Parse("BoCode = ?", Item.PuchaseTax));
 
                     vwSupplierPrice tempprice;
@@ -124,6 +129,7 @@ namespace WingHinPortal.Module.BusinessObjects.PO
                 else if (!IsLoading && value == null)
                 {
                     ItemDesc = null;
+                    UOM = null;
                     Unitprice = 0;
                     Tax = null;
                 }
@@ -140,6 +146,43 @@ namespace WingHinPortal.Module.BusinessObjects.PO
             set
             {
                 SetPropertyValue("ItemDesc", ref _ItemDesc, value);
+            }
+        }
+
+        private string _ItemDetails;
+        [XafDisplayName("Item Details")]
+        [Index(5), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
+        public string ItemDetails
+        {
+            get { return _ItemDetails; }
+            set
+            {
+                SetPropertyValue("ItemDetails", ref _ItemDetails, value);
+            }
+        }
+
+        private string _UOM;
+        [XafDisplayName("UOM")]
+        [Appearance("UOM", Enabled = false)]
+        [Index(6), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
+        public string UOM
+        {
+            get { return _UOM; }
+            set
+            {
+                SetPropertyValue("UOM", ref _UOM, value);
+            }
+        }
+
+        private string _Vehicle;
+        [XafDisplayName("Vehicle")]
+        [Index(7), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
+        public string Vehicle
+        {
+            get { return _Vehicle; }
+            set
+            {
+                SetPropertyValue("Vehicle", ref _Vehicle, value);
             }
         }
 
@@ -166,8 +209,16 @@ namespace WingHinPortal.Module.BusinessObjects.PO
                     }
 
                     TaxAmount = (Quantity * Unitprice) * (TaxRate / 100);
-                    SubTotalWithoutTax = Quantity * Unitprice;
-                    SubTotal = Quantity * Unitprice + TaxAmount;
+                    if (Discount > 0)
+                    {
+                        SubTotalWithoutTax = Quantity * Unitprice - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                        SubTotal = Quantity * Unitprice + TaxAmount - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                    }
+                    else
+                    {
+                        SubTotalWithoutTax = Quantity * Unitprice;
+                        SubTotal = Quantity * Unitprice + TaxAmount;
+                    }
                 }
             }
         }
@@ -187,12 +238,37 @@ namespace WingHinPortal.Module.BusinessObjects.PO
             }
         }
 
+        private decimal _Discount;
+        [ImmediatePostData]
+        [DbType("numeric(18,6)")]
+        [ModelDefault("DisplayFormat", "{0:n2}")]
+        [XafDisplayName("Discount")]
+        [Index(10), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
+        public decimal Discount
+        {
+            get { return _Discount; }
+            set
+            {
+                SetPropertyValue("Discount", ref _Discount, value);
+                if (!IsLoading && value > 0)
+                {
+                    SubTotalWithoutTax = Quantity * Unitprice - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                    SubTotal = Quantity * Unitprice + TaxAmount - ((Discount/100) * (Quantity * Unitprice + TaxAmount));
+                }
+                if (!IsLoading && value <= 0)
+                {
+                    SubTotalWithoutTax = Quantity * Unitprice;
+                    SubTotal = Quantity * Unitprice + TaxAmount;
+                }
+            }
+        }
+
         private decimal _Unitprice;
         [ImmediatePostData]
         [XafDisplayName("Unit Price")]
         [DbType("numeric(18,6)")]
         [ModelDefault("DisplayFormat", "{0:n2}")]
-        [Index(10), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
+        [Index(11), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
         public decimal Unitprice
         {
             get { return _Unitprice; }
@@ -202,8 +278,16 @@ namespace WingHinPortal.Module.BusinessObjects.PO
                 if (!IsLoading)
                 {
                     TaxAmount = (Quantity * Unitprice) * (TaxRate / 100);
-                    SubTotalWithoutTax = Quantity * Unitprice;
-                    SubTotal = Quantity * Unitprice + TaxAmount;
+                    if (Discount > 0)
+                    {
+                        SubTotalWithoutTax = Quantity * Unitprice - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                        SubTotal = Quantity * Unitprice + TaxAmount - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                    }
+                    else
+                    {
+                        SubTotalWithoutTax = Quantity * Unitprice;
+                        SubTotal = Quantity * Unitprice + TaxAmount;
+                    }
                 }
             }
         }
@@ -245,8 +329,16 @@ namespace WingHinPortal.Module.BusinessObjects.PO
                 if (!IsLoading && value != 0)
                 {
                     TaxAmount = (Quantity * Unitprice) * (TaxRate / 100);
-                    SubTotalWithoutTax = Quantity * Unitprice;
-                    SubTotal = Quantity * Unitprice + TaxAmount;
+                    if (Discount > 0)
+                    {
+                        SubTotalWithoutTax = Quantity * Unitprice - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                        SubTotal = Quantity * Unitprice + TaxAmount - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                    }
+                    else
+                    {
+                        SubTotalWithoutTax = Quantity * Unitprice;
+                        SubTotal = Quantity * Unitprice + TaxAmount;
+                    }
                 }
             }
         }
@@ -322,7 +414,7 @@ namespace WingHinPortal.Module.BusinessObjects.PO
 
         private ExpenditureType _ExpenditureType;
         [ImmediatePostData]
-        [XafDisplayName("ExpenditureType")]
+        [XafDisplayName("Expenditure Type")]
         [Index(33), VisibleInDetailView(false), VisibleInListView(false), VisibleInLookupListView(false)]
         public ExpenditureType ExpenditureType
         {
@@ -354,7 +446,7 @@ namespace WingHinPortal.Module.BusinessObjects.PO
         [ImmediatePostData]
         [XafDisplayName("CostCenter")]
         [RuleRequiredField(DefaultContexts.Save)]
-        [Index(38), VisibleInDetailView(true), VisibleInListView(false), VisibleInLookupListView(false)]
+        [Index(38), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(false)]
         public vwCostCenter CostCenter
         {
             get { return _CostCenter; }

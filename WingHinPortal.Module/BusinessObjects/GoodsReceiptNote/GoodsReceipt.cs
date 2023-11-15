@@ -135,7 +135,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
         private vwVendors _VendorCode;
         [NoForeignKey]
         [ImmediatePostData]
-        [DataSourceCriteria("ValidFor = 'Y'")]
+        [DataSourceCriteria("ValidFor = 'Y' and Expenditure = '@this.ExpenditureType.ExpenditureTypeCode'")]
         [XafDisplayName("Vendor Code")]
         [RuleRequiredField(DefaultContexts.Save)]
         [Index(5), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
@@ -202,6 +202,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
 
         private DateTime _DocDate;
         [XafDisplayName("Doc Date")]
+        [Appearance("DocDate", Enabled = false)]
         [Index(13), VisibleInDetailView(false), VisibleInListView(false), VisibleInLookupListView(false)]
         public DateTime DocDate
         {
@@ -225,6 +226,19 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
             }
         }
 
+        private DateTime _DeliveryDate;
+        [XafDisplayName("Delivery Date")]
+        [RuleRequiredField(DefaultContexts.Save)]
+        [Index(16), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(false)]
+        public DateTime DeliveryDate
+        {
+            get { return _DeliveryDate; }
+            set
+            {
+                SetPropertyValue("DeliveryDate", ref _DeliveryDate, value);
+            }
+        }
+
         private DocStatus _DocStatus;
         [XafDisplayName("Doc Status")]
         [Appearance("DocStatus", Enabled = false)]
@@ -241,7 +255,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
         private ExpenditureType _ExpenditureType;
         [ImmediatePostData]
         [DataSourceCriteria("IsActive = 'True'")]
-        [XafDisplayName("ExpenditureType")]
+        [XafDisplayName("Expenditure Type")]
         [Index(20), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
         public ExpenditureType ExpenditureType
         {
@@ -263,6 +277,19 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
             set
             {
                 SetPropertyValue("ItemGroup", ref _ItemGroup, value);
+            }
+        }
+
+        private CompanyAddress _CompanyAddress;
+        [XafDisplayName("Delivery Address")]
+        [Index(25), VisibleInListView(false), VisibleInDetailView(true), VisibleInLookupListView(false)]
+        [RuleRequiredField(DefaultContexts.Save)]
+        public CompanyAddress CompanyAddress
+        {
+            get { return _CompanyAddress; }
+            set
+            {
+                SetPropertyValue("CompanyAddress", ref _CompanyAddress, value);
             }
         }
 

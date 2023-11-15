@@ -61,6 +61,10 @@ namespace WingHinPortal.Module.BusinessObjects.View
         [Appearance("ItemDesc", Enabled = false)]
         public string ItemDesc { get; set; }
 
+        [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
+        [Appearance("ItemDetails", Enabled = false)]
+        public string ItemDetails { get; set; }
+
         [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(true)]
         [Appearance("Quantity", Enabled = false)]
         [DbType("numeric(18,6)")]

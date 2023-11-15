@@ -25,6 +25,7 @@ namespace WingHinPortal.Module.BusinessObjects.PurchaseBlanketAgreement
     [Appearance("HideDelete", AppearanceItemType.Action, "True", TargetItems = "Delete", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
     [Appearance("HideSubmit", AppearanceItemType.Action, "True", TargetItems = "SubmitPBA", Criteria = "not (DocStatus in (0))", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
     [Appearance("HideCancel", AppearanceItemType.Action, "True", TargetItems = "CancelPBA", Criteria = "not (DocStatus in (0))", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
+    [Appearance("HideTerminate", AppearanceItemType.Action, "True", TargetItems = "TerminatePBA", Criteria = "not (DocStatus in (1))", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
 
     [RuleCriteria("BillingValidation", DefaultContexts.Save, "IsValid1 = 1", "Please select billing type.")]
 
@@ -137,7 +138,7 @@ namespace WingHinPortal.Module.BusinessObjects.PurchaseBlanketAgreement
         private vwVendors _VendorCode;
         [NoForeignKey]
         [ImmediatePostData]
-        [DataSourceCriteria("ValidFor = 'Y'")]
+        [DataSourceCriteria("ValidFor = 'Y' and Expenditure = '@this.ExpenditureType.ExpenditureTypeCode'")]
         [XafDisplayName("Vendor Code")]
         [RuleRequiredField(DefaultContexts.Save)]
         [Appearance("VendorCode", Enabled = false, Criteria = "(DocStatus in (1))")]
@@ -279,6 +280,7 @@ namespace WingHinPortal.Module.BusinessObjects.PurchaseBlanketAgreement
 
         private DateTime _ManualDate;
         [XafDisplayName("Manual Date")]
+        //[Appearance("ManualDate", Enabled = false, Criteria = "(DocStatus in (1))")]
         [Index(22), VisibleInDetailView(true), VisibleInListView(false), VisibleInLookupListView(false)]
         public DateTime ManualDate
         {
@@ -302,10 +304,22 @@ namespace WingHinPortal.Module.BusinessObjects.PurchaseBlanketAgreement
             }
         }
 
+        private DateTime _TerminateDate;
+        [XafDisplayName("Terminate Date")]
+        [Index(24), VisibleInDetailView(true), VisibleInListView(false), VisibleInLookupListView(false)]
+        public DateTime TerminateDate
+        {
+            get { return _TerminateDate; }
+            set
+            {
+                SetPropertyValue("TerminateDate", ref _TerminateDate, value);
+            }
+        }
+
         private ExpenditureType _ExpenditureType;
         [ImmediatePostData]
         [DataSourceCriteria("IsActive = 'True'")]
-        [XafDisplayName("ExpenditureType")]
+        [XafDisplayName("Expenditure Type")]
         [Appearance("ExpenditureType", Enabled = false, Criteria = "(DocStatus in (1))")]
         [Index(25), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
         public ExpenditureType ExpenditureType
@@ -333,6 +347,7 @@ namespace WingHinPortal.Module.BusinessObjects.PurchaseBlanketAgreement
         }
 
         private CompanyAddress _CompanyAddress;
+        [XafDisplayName("Delivery Address")]
         [Appearance("CompanyAddress", Enabled = false, Criteria = "(DocStatus in (1))")]
         [Index(30), VisibleInListView(false), VisibleInDetailView(true), VisibleInLookupListView(false)]
         [RuleRequiredField(DefaultContexts.Save)]
@@ -462,7 +477,7 @@ namespace WingHinPortal.Module.BusinessObjects.PurchaseBlanketAgreement
 
         [Association("PurchaseBlanketAgreement-PurchaseBlanketAgreementAttachment")]
         [XafDisplayName("Attachments")]
-        [Appearance("PurchaseBlanketAgreementAttachment", Enabled = false, Criteria = "(DocStatus in (1))")]
+        //[Appearance("PurchaseBlanketAgreementAttachment", Enabled = false, Criteria = "(DocStatus in (1))")]
         public XPCollection<PurchaseBlanketAgreementAttachment> PurchaseBlanketAgreementAttachment
         {
             get { return GetCollection<PurchaseBlanketAgreementAttachment>("PurchaseBlanketAgreementAttachment"); }

@@ -14,6 +14,12 @@ using DevExpress.Persistent.Validation;
 
 namespace WingHinPortal.Module.BusinessObjects
 {
+    public enum CrReportEnum
+    {
+        STRING = 0,
+        DATE = 1
+    }
+
     public enum DocTypeList
     {
         [XafDisplayName("Purchase Requests")] PurchaseRequests = 0,
@@ -32,7 +38,8 @@ namespace WingHinPortal.Module.BusinessObjects
         Approved = 4,
         Rejected = 5,
         Posted = 6,
-        Closed = 7
+        Closed = 7,
+        Terminated = 8
     }
 
     public enum ApprovalStatusType

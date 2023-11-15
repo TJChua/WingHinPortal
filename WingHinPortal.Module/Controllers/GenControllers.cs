@@ -123,5 +123,65 @@ namespace WingHinPortal.Module.Controllers
                 return -1;
             }
         }
+
+        public int SupplierSendEmail(string MailSubject, string MailBody, List<string> ToEmails, string FileName)
+        {
+            try
+            {
+                // return 0 = sent nothing
+                // return -1 = sent error
+                // return 1 = sent successful
+                if (!GeneralSettings.EmailSend) return 0;
+                if (ToEmails.Count <= 0) return 0;
+
+                MailMessage mailMsg = new MailMessage();
+
+                mailMsg.From = new MailAddress(GeneralSettings.Email, GeneralSettings.EmailName);
+
+                foreach (string ToEmail in ToEmails)
+                {
+                    mailMsg.To.Add(ToEmail);
+                }
+
+                mailMsg.Subject = MailSubject;
+                //mailMsg.SubjectEncoding = System.Text.Encoding.UTF8;
+                mailMsg.Body = MailBody;
+                if (FileName != null)
+                {
+                    mailMsg.Attachments.Add(new Attachment(FileName));
+                }
+
+                SmtpClient smtpClient = new SmtpClient
+                {
+                    EnableSsl = GeneralSettings.EmailSSL,
+                    UseDefaultCredentials = GeneralSettings.EmailUseDefaultCredential,
+                    Host = GeneralSettings.EmailHost,
+                    Port = int.Parse(GeneralSettings.EmailPort),
+                };
+
+                if (Enum.IsDefined(typeof(SmtpDeliveryMethod), GeneralSettings.DeliveryMethod))
+                    smtpClient.DeliveryMethod = (SmtpDeliveryMethod)Enum.Parse(typeof(SmtpDeliveryMethod), GeneralSettings.DeliveryMethod);
+
+                if (!smtpClient.UseDefaultCredentials)
+                {
+                    if (string.IsNullOrEmpty(GeneralSettings.EmailHostDomain))
+                        smtpClient.Credentials = new NetworkCredential(GeneralSettings.Email, GeneralSettings.EmailPassword);
+                    else
+                        smtpClient.Credentials = new NetworkCredential(GeneralSettings.Email, GeneralSettings.EmailPassword, GeneralSettings.EmailHostDomain);
+                }
+
+                smtpClient.Send(mailMsg);
+
+                mailMsg.Dispose();
+                smtpClient.Dispose();
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                showMsg("Cannot send email", ex.Message, InformationType.Error);
+                return -1;
+            }
+        }
     }
 }

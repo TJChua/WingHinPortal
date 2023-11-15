@@ -147,7 +147,7 @@ namespace WingHinPortal.Module.BusinessObjects.PR
         private vwVendors _VendorCode;
         [NoForeignKey]
         [ImmediatePostData]
-        [DataSourceCriteria("ValidFor = 'Y'")]
+        [DataSourceCriteria("ValidFor = 'Y' and Expenditure = '@this.ExpenditureType.ExpenditureTypeCode'")]
         [XafDisplayName("Vendor Code")]
         //[RuleRequiredField(DefaultContexts.Save)]
         [Index(5), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
@@ -199,7 +199,7 @@ namespace WingHinPortal.Module.BusinessObjects.PR
         private ExpenditureType _ExpenditureType;
         [ImmediatePostData]
         [DataSourceCriteria("IsActive = 'True'")]
-        [XafDisplayName("ExpenditureType")]
+        [XafDisplayName("Expenditure Type")]
         [Index(11), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
         public ExpenditureType ExpenditureType
         {
@@ -229,6 +229,7 @@ namespace WingHinPortal.Module.BusinessObjects.PR
         private StaffInfo _Requestor;
         [ImmediatePostData]
         [XafDisplayName("Requestor")]
+        [Appearance("Requestor", Enabled = false)]
         [Index(13), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
         public StaffInfo Requestor
         {
@@ -273,6 +274,7 @@ namespace WingHinPortal.Module.BusinessObjects.PR
         private DateTime _RequestDate;
         [XafDisplayName("Request Date")]
         [RuleRequiredField(DefaultContexts.Save)]
+        [Appearance("RequestDate", Enabled = false)]
         [Index(18), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(false)]
         public DateTime RequestDate
         {
@@ -309,6 +311,7 @@ namespace WingHinPortal.Module.BusinessObjects.PR
         }
 
         private CompanyAddress _CompanyAddress;
+        [XafDisplayName("Delivery Address")]
         [Index(25), VisibleInListView(false), VisibleInDetailView(true), VisibleInLookupListView(false)]
         [RuleRequiredField(DefaultContexts.Save)]
         public CompanyAddress CompanyAddress
@@ -317,6 +320,19 @@ namespace WingHinPortal.Module.BusinessObjects.PR
             set
             {
                 SetPropertyValue("CompanyAddress", ref _CompanyAddress, value);
+            }
+        }
+
+        private string _Attn;
+        [XafDisplayName("Attn")]
+        [Size(25000)]
+        [Index(28), VisibleInDetailView(true), VisibleInListView(false), VisibleInLookupListView(false)]
+        public string Attn
+        {
+            get { return _Attn; }
+            set
+            {
+                SetPropertyValue("Attn", ref _Attn, value);
             }
         }
 

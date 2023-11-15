@@ -137,9 +137,9 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsIssue
         private vwVendors _VendorCode;
         [NoForeignKey]
         [ImmediatePostData]
-        [DataSourceCriteria("ValidFor = 'Y'")]
+        [DataSourceCriteria("ValidFor = 'Y' and Expenditure = '@this.ExpenditureType.ExpenditureTypeCode'")]
         [XafDisplayName("Vendor Code")]
-        [RuleRequiredField(DefaultContexts.Save)]
+        //[RuleRequiredField(DefaultContexts.Save)]
         [Index(5), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
         public vwVendors VendorCode
         {
@@ -243,7 +243,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsIssue
         private ExpenditureType _ExpenditureType;
         [ImmediatePostData]
         [DataSourceCriteria("IsActive = 'True'")]
-        [XafDisplayName("ExpenditureType")]
+        [XafDisplayName("Expenditure Type")]
         [Index(20), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
         public ExpenditureType ExpenditureType
         {

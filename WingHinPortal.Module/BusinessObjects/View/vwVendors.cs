@@ -42,6 +42,10 @@ namespace WingHinPortal.Module.BusinessObjects.View
 
         [Key]
         [Browsable(true)]
+        [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
+        [Appearance("PriKey", Enabled = false)]
+        public string PriKey { get; set; }
+
         [XafDisplayName("CardCode")]
         [Appearance("CardCode", Enabled = false)]
         [Index(0)]
@@ -73,6 +77,10 @@ namespace WingHinPortal.Module.BusinessObjects.View
         [VisibleInLookupListView(false), VisibleInListView(true), VisibleInDetailView(true)]
         [Appearance("Emails", Enabled = false)]
         public string Emails { get; set; }
+
+        [VisibleInLookupListView(false), VisibleInListView(true), VisibleInDetailView(true)]
+        [Appearance("Expenditure", Enabled = false)]
+        public string Expenditure { get; set; }
 
         [Index(30), VisibleInDetailView(false), VisibleInListView(false), VisibleInLookupListView(true)]
         public string BoFullName

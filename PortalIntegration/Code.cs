@@ -236,8 +236,8 @@ namespace PortalIntegration
 
                     #region PO BA
                     IList<PurchaseBlanketAgreement> pobalist = ListObjectSpace.GetObjects<PurchaseBlanketAgreement>
-                    (CriteriaOperator.Parse("DocStatus = ? and ? > StartDate and ? < EndDate",
-                    1, DateTime.Now.Date, DateTime.Now.Date));
+                    (CriteriaOperator.Parse("? >= StartDate and ? <= EndDate",
+                    DateTime.Now.Date, DateTime.Now.Date));
 
                     foreach (PurchaseBlanketAgreement dtlpoba in pobalist)
                     {
@@ -246,527 +246,559 @@ namespace PortalIntegration
                             IObjectSpace pobaos = ObjectSpaceProvider.CreateObjectSpace();
                             PurchaseBlanketAgreement pobaobj = pobaos.GetObjectByKey<PurchaseBlanketAgreement>(dtlpoba.Oid);
 
-                            if (pobaobj.Billing == Billing.Monthly)
+                            if (pobaobj.DocStatus != DocStatus.Terminated)
                             {
-                                if (DateTime.Now.Date == pobaobj.PreviousDate.AddMonths(1).Date)
+                                if (pobaobj.Billing == Billing.Monthly)
                                 {
-                                    //#region Post PO BA
-                                    //if (!sap.oCom.InTransaction) sap.oCom.StartTransaction();
-
-                                    //int temppo = 0;
-
-                                    //temppo = PostPOBAtoSAP(pobaobj, ObjectSpaceProvider, sap);
-                                    //if (temppo == 1)
-                                    //{
-                                    //    if (sap.oCom.InTransaction)
-                                    //        sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
-
-                                    //    pobaobj.Sap = true;
-                                    //    pobaobj.PreviousDate = DateTime.Now;
-
-                                    //    PurchaseBlanketAgreementDocStatus ds = pobaos.CreateObject<PurchaseBlanketAgreementDocStatus>();
-                                    //    ds.CreateUser = pobaos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
-                                    //    ds.CreateDate = DateTime.Now;
-                                    //    ds.DocStatus = dtlpoba.DocStatus;
-                                    //    ds.DocRemarks = "Posted SAP";
-                                    //    pobaobj.PurchaseBlanketAgreementDocStatus.Add(ds);
-
-                                    //    GC.Collect();
-                                    //}
-                                    //else if (temppo <= 0)
-                                    //{
-                                    //    if (sap.oCom.InTransaction)
-                                    //        sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
-
-                                    //    GC.Collect();
-                                    //}
-                                    //#endregion
-
-                                    #region Add PO
-                                    pobaobj.PreviousDate = DateTime.Now;
-                                    IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
-                                    PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
-
-                                    IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
-                                    DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
-
-                                    number.CurrectDocNum = number.NextDocNum;
-                                    number.NextDocNum = number.NextDocNum + 1;
-
-                                    newPO.DocNum = "PO" + number.CurrectDocNum;
-
-                                    docos.CommitChanges();
-
-                                    if (pobaobj.VendorCode != null)
+                                    if (DateTime.Now.Date == pobaobj.PreviousDate.AddMonths(1).Date)
                                     {
-                                        newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.CardCode);
-                                    }
-                                    if (pobaobj.Warehouse != null)
-                                    {
-                                        newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
-                                    }
-                                    if (pobaobj.Department != null)
-                                    {
-                                        newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
-                                    }
-                                    if (pobaobj.ExpenditureType != null)
-                                    {
-                                        newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
-                                    }
-                                    if (pobaobj.ItemGroup != null)
-                                    {
-                                        newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
-                                    }
-                                    if (pobaobj.CompanyAddress != null)
-                                    {
-                                        newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
-                                    }
-                                    newPO.DocStatus = DocStatus.New;
+                                        //#region Post PO BA
+                                        //if (!sap.oCom.InTransaction) sap.oCom.StartTransaction();
 
-                                    PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+                                        //int temppo = 0;
 
-                                    foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
-                                    {
-                                        newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
-                                        newPOItem.ItemDesc = dtl.ItemDesc;
-                                        newPOItem.Unitprice = dtl.Unitprice;
-                                        if (dtl.ExpenditureType != null)
+                                        //temppo = PostPOBAtoSAP(pobaobj, ObjectSpaceProvider, sap);
+                                        //if (temppo == 1)
+                                        //{
+                                        //    if (sap.oCom.InTransaction)
+                                        //        sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
+
+                                        //    pobaobj.Sap = true;
+                                        //    pobaobj.PreviousDate = DateTime.Now;
+
+                                        //    PurchaseBlanketAgreementDocStatus ds = pobaos.CreateObject<PurchaseBlanketAgreementDocStatus>();
+                                        //    ds.CreateUser = pobaos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
+                                        //    ds.CreateDate = DateTime.Now;
+                                        //    ds.DocStatus = dtlpoba.DocStatus;
+                                        //    ds.DocRemarks = "Posted SAP";
+                                        //    pobaobj.PurchaseBlanketAgreementDocStatus.Add(ds);
+
+                                        //    GC.Collect();
+                                        //}
+                                        //else if (temppo <= 0)
+                                        //{
+                                        //    if (sap.oCom.InTransaction)
+                                        //        sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
+
+                                        //    GC.Collect();
+                                        //}
+                                        //#endregion
+
+                                        #region Add PO
+                                        pobaobj.PreviousDate = DateTime.Now;
+                                        IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
+                                        PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
+
+                                        IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
+                                        DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
+
+                                        number.CurrectDocNum = number.NextDocNum;
+                                        number.NextDocNum = number.NextDocNum + 1;
+
+                                        newPO.DocNum = "PO" + number.CurrectDocNum;
+
+                                        docos.CommitChanges();
+
+                                        if (pobaobj.VendorCode != null)
                                         {
-                                            newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.PriKey);
                                         }
-                                        if (dtl.ItemGroup != null)
+                                        if (pobaobj.Warehouse != null)
                                         {
-                                            newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
                                         }
-                                        newPOItem.BaseDoc = pobaobj.DocNum;
-                                        newPOItem.BaseOid = dtl.Oid.ToString();
-                                        newPOItem.OpenQuantity = dtl.Quantity;
-                                        newPOItem.Quantity = dtl.Quantity;
-                                        if (dtl.Tax != null)
+                                        if (pobaobj.Department != null)
                                         {
-                                            newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
+                                        }
+                                        if (pobaobj.ExpenditureType != null)
+                                        {
+                                            newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
+                                        }
+                                        if (pobaobj.ItemGroup != null)
+                                        {
+                                            newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
+                                        }
+                                        if (pobaobj.CompanyAddress != null)
+                                        {
+                                            newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
+                                        }
+                                        newPO.DocStatus = DocStatus.Submit;
+
+                                        PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+
+                                        foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
+                                        {
+                                            newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
+                                            newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.Unitprice = dtl.Unitprice;
+                                            if (dtl.ExpenditureType != null)
+                                            {
+                                                newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            }
+                                            if (dtl.ItemGroup != null)
+                                            {
+                                                newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            }
+                                            if (dtl.CostCenter != null)
+                                            {
+                                                newPOItem.CostCenter = addos.GetObjectByKey<vwCostCenter>(dtl.CostCenter.PrcCode);
+                                            }
+                                            newPOItem.BaseDoc = pobaobj.DocNum;
+                                            newPOItem.BaseOid = dtl.Oid.ToString();
+                                            newPOItem.OpenQuantity = dtl.Quantity;
+                                            newPOItem.Quantity = dtl.Quantity;
+                                            if (dtl.Tax != null)
+                                            {
+                                                newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            }
+                                            newPOItem.Discount = dtl.Discount;
+                                            newPOItem.Vehicle = dtl.Vehicle;
+
+                                            newPO.PurchaseOrderDetails.Add(newPOItem);
                                         }
 
-                                        newPO.PurchaseOrderDetails.Add(newPOItem);
+                                        addos.CommitChanges();
+                                        #endregion
+
+                                        pobaos.CommitChanges();
                                     }
-
-                                    addos.CommitChanges();
-                                    #endregion
-
-                                    pobaos.CommitChanges();
                                 }
-                            }
-                            else if (pobaobj.Billing == Billing.BiMonthly)
-                            {
-                                if (DateTime.Now.Date == pobaobj.PreviousDate.AddMonths(2).Date)
+                                else if (pobaobj.Billing == Billing.BiMonthly)
                                 {
-                                    //            #region Post PO BA
-                                    //            if (!sap.oCom.InTransaction) sap.oCom.StartTransaction();
-
-                                    //            int temppo = 0;
-
-                                    //            temppo = PostPOBAtoSAP(pobaobj, ObjectSpaceProvider, sap);
-                                    //            if (temppo == 1)
-                                    //            {
-                                    //                if (sap.oCom.InTransaction)
-                                    //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
-
-                                    //                pobaobj.Sap = true;
-                                    //                pobaobj.PreviousDate = DateTime.Now;
-
-                                    //                PurchaseBlanketAgreementDocStatus ds = pobaos.CreateObject<PurchaseBlanketAgreementDocStatus>();
-                                    //                ds.CreateUser = pobaos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
-                                    //                ds.CreateDate = DateTime.Now;
-                                    //                ds.DocStatus = dtlpoba.DocStatus;
-                                    //                ds.DocRemarks = "Posted SAP";
-                                    //                pobaobj.PurchaseBlanketAgreementDocStatus.Add(ds);
-
-                                    //                GC.Collect();
-                                    //            }
-                                    //            else if (temppo <= 0)
-                                    //            {
-                                    //                if (sap.oCom.InTransaction)
-                                    //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
-
-                                    //                GC.Collect();
-                                    //            }
-                                    //            #endregion
-
-                                    #region Add PO
-                                    pobaobj.PreviousDate = DateTime.Now;
-                                    IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
-                                    PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
-
-                                    IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
-                                    DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
-
-                                    number.CurrectDocNum = number.NextDocNum;
-                                    number.NextDocNum = number.NextDocNum + 1;
-
-                                    newPO.DocNum = "PO" + number.CurrectDocNum;
-
-                                    docos.CommitChanges();
-
-                                    if (pobaobj.VendorCode != null)
+                                    if (DateTime.Now.Date == pobaobj.PreviousDate.AddMonths(2).Date)
                                     {
-                                        newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.CardCode);
-                                    }
-                                    if (pobaobj.Warehouse != null)
-                                    {
-                                        newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
-                                    }
-                                    if (pobaobj.Department != null)
-                                    {
-                                        newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
-                                    }
-                                    if (pobaobj.ExpenditureType != null)
-                                    {
-                                        newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
-                                    }
-                                    if (pobaobj.ItemGroup != null)
-                                    {
-                                        newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
-                                    }
-                                    if (pobaobj.CompanyAddress != null)
-                                    {
-                                        newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
-                                    }
-                                    newPO.DocStatus = DocStatus.New;
+                                        //            #region Post PO BA
+                                        //            if (!sap.oCom.InTransaction) sap.oCom.StartTransaction();
 
-                                    PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+                                        //            int temppo = 0;
 
-                                    foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
-                                    {
-                                        newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
-                                        newPOItem.ItemDesc = dtl.ItemDesc;
-                                        newPOItem.Unitprice = dtl.Unitprice;
-                                        if (dtl.ExpenditureType != null)
+                                        //            temppo = PostPOBAtoSAP(pobaobj, ObjectSpaceProvider, sap);
+                                        //            if (temppo == 1)
+                                        //            {
+                                        //                if (sap.oCom.InTransaction)
+                                        //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
+
+                                        //                pobaobj.Sap = true;
+                                        //                pobaobj.PreviousDate = DateTime.Now;
+
+                                        //                PurchaseBlanketAgreementDocStatus ds = pobaos.CreateObject<PurchaseBlanketAgreementDocStatus>();
+                                        //                ds.CreateUser = pobaos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
+                                        //                ds.CreateDate = DateTime.Now;
+                                        //                ds.DocStatus = dtlpoba.DocStatus;
+                                        //                ds.DocRemarks = "Posted SAP";
+                                        //                pobaobj.PurchaseBlanketAgreementDocStatus.Add(ds);
+
+                                        //                GC.Collect();
+                                        //            }
+                                        //            else if (temppo <= 0)
+                                        //            {
+                                        //                if (sap.oCom.InTransaction)
+                                        //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
+
+                                        //                GC.Collect();
+                                        //            }
+                                        //            #endregion
+
+                                        #region Add PO
+                                        pobaobj.PreviousDate = DateTime.Now;
+                                        IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
+                                        PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
+
+                                        IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
+                                        DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
+
+                                        number.CurrectDocNum = number.NextDocNum;
+                                        number.NextDocNum = number.NextDocNum + 1;
+
+                                        newPO.DocNum = "PO" + number.CurrectDocNum;
+
+                                        docos.CommitChanges();
+
+                                        if (pobaobj.VendorCode != null)
                                         {
-                                            newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.PriKey);
                                         }
-                                        if (dtl.ItemGroup != null)
+                                        if (pobaobj.Warehouse != null)
                                         {
-                                            newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
                                         }
-                                        newPOItem.BaseDoc = pobaobj.DocNum;
-                                        newPOItem.BaseOid = dtl.Oid.ToString();
-                                        newPOItem.OpenQuantity = dtl.Quantity;
-                                        newPOItem.Quantity = dtl.Quantity;
-                                        if (dtl.Tax != null)
+                                        if (pobaobj.Department != null)
                                         {
-                                            newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
+                                        }
+                                        if (pobaobj.ExpenditureType != null)
+                                        {
+                                            newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
+                                        }
+                                        if (pobaobj.ItemGroup != null)
+                                        {
+                                            newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
+                                        }
+                                        if (pobaobj.CompanyAddress != null)
+                                        {
+                                            newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
+                                        }
+                                        newPO.DocStatus = DocStatus.Submit;
+
+                                        PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+
+                                        foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
+                                        {
+                                            newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
+                                            newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.Unitprice = dtl.Unitprice;
+                                            if (dtl.ExpenditureType != null)
+                                            {
+                                                newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            }
+                                            if (dtl.ItemGroup != null)
+                                            {
+                                                newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            }
+                                            if (dtl.CostCenter != null)
+                                            {
+                                                newPOItem.CostCenter = addos.GetObjectByKey<vwCostCenter>(dtl.CostCenter.PrcCode);
+                                            }
+                                            newPOItem.BaseDoc = pobaobj.DocNum;
+                                            newPOItem.BaseOid = dtl.Oid.ToString();
+                                            newPOItem.OpenQuantity = dtl.Quantity;
+                                            newPOItem.Quantity = dtl.Quantity;
+                                            if (dtl.Tax != null)
+                                            {
+                                                newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            }
+                                            newPOItem.Discount = dtl.Discount;
+                                            newPOItem.Vehicle = dtl.Vehicle;
+
+                                            newPO.PurchaseOrderDetails.Add(newPOItem);
                                         }
 
-                                        newPO.PurchaseOrderDetails.Add(newPOItem);
+                                        addos.CommitChanges();
+                                        #endregion
+
+                                        pobaos.CommitChanges();
                                     }
-
-                                    addos.CommitChanges();
-                                    #endregion
-
-                                    pobaos.CommitChanges();
                                 }
-                            }
-                            else if (pobaobj.Billing == Billing.HalfYearly)
-                            {
-                                if (DateTime.Now.Date == pobaobj.PreviousDate.AddMonths(6).Date)
+                                else if (pobaobj.Billing == Billing.HalfYearly)
                                 {
-                                    //            #region Post PO BA
-                                    //            if (!sap.oCom.InTransaction) sap.oCom.StartTransaction();
-
-                                    //            int temppo = 0;
-
-                                    //            temppo = PostPOBAtoSAP(pobaobj, ObjectSpaceProvider, sap);
-                                    //            if (temppo == 1)
-                                    //            {
-                                    //                if (sap.oCom.InTransaction)
-                                    //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
-
-                                    //                pobaobj.Sap = true;
-                                    //                pobaobj.PreviousDate = DateTime.Now;
-
-                                    //                PurchaseBlanketAgreementDocStatus ds = pobaos.CreateObject<PurchaseBlanketAgreementDocStatus>();
-                                    //                ds.CreateUser = pobaos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
-                                    //                ds.CreateDate = DateTime.Now;
-                                    //                ds.DocStatus = dtlpoba.DocStatus;
-                                    //                ds.DocRemarks = "Posted SAP";
-                                    //                pobaobj.PurchaseBlanketAgreementDocStatus.Add(ds);
-
-                                    //                GC.Collect();
-                                    //            }
-                                    //            else if (temppo <= 0)
-                                    //            {
-                                    //                if (sap.oCom.InTransaction)
-                                    //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
-
-                                    //                GC.Collect();
-                                    //            }
-                                    //            #endregion
-
-                                    #region Add PO
-                                    pobaobj.PreviousDate = DateTime.Now;
-                                    IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
-                                    PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
-
-                                    IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
-                                    DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
-
-                                    number.CurrectDocNum = number.NextDocNum;
-                                    number.NextDocNum = number.NextDocNum + 1;
-
-                                    newPO.DocNum = "PO" + number.CurrectDocNum;
-
-                                    docos.CommitChanges();
-
-                                    if (pobaobj.VendorCode != null)
+                                    if (DateTime.Now.Date == pobaobj.PreviousDate.AddMonths(6).Date)
                                     {
-                                        newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.CardCode);
-                                    }
-                                    if (pobaobj.Warehouse != null)
-                                    {
-                                        newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
-                                    }
-                                    if (pobaobj.Department != null)
-                                    {
-                                        newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
-                                    }
-                                    if (pobaobj.ExpenditureType != null)
-                                    {
-                                        newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
-                                    }
-                                    if (pobaobj.ItemGroup != null)
-                                    {
-                                        newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
-                                    }
-                                    if (pobaobj.CompanyAddress != null)
-                                    {
-                                        newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
-                                    }
-                                    newPO.DocStatus = DocStatus.New;
+                                        //            #region Post PO BA
+                                        //            if (!sap.oCom.InTransaction) sap.oCom.StartTransaction();
 
-                                    PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+                                        //            int temppo = 0;
 
-                                    foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
-                                    {
-                                        newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
-                                        newPOItem.ItemDesc = dtl.ItemDesc;
-                                        newPOItem.Unitprice = dtl.Unitprice;
-                                        if (dtl.ExpenditureType != null)
+                                        //            temppo = PostPOBAtoSAP(pobaobj, ObjectSpaceProvider, sap);
+                                        //            if (temppo == 1)
+                                        //            {
+                                        //                if (sap.oCom.InTransaction)
+                                        //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
+
+                                        //                pobaobj.Sap = true;
+                                        //                pobaobj.PreviousDate = DateTime.Now;
+
+                                        //                PurchaseBlanketAgreementDocStatus ds = pobaos.CreateObject<PurchaseBlanketAgreementDocStatus>();
+                                        //                ds.CreateUser = pobaos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
+                                        //                ds.CreateDate = DateTime.Now;
+                                        //                ds.DocStatus = dtlpoba.DocStatus;
+                                        //                ds.DocRemarks = "Posted SAP";
+                                        //                pobaobj.PurchaseBlanketAgreementDocStatus.Add(ds);
+
+                                        //                GC.Collect();
+                                        //            }
+                                        //            else if (temppo <= 0)
+                                        //            {
+                                        //                if (sap.oCom.InTransaction)
+                                        //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
+
+                                        //                GC.Collect();
+                                        //            }
+                                        //            #endregion
+
+                                        #region Add PO
+                                        pobaobj.PreviousDate = DateTime.Now;
+                                        IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
+                                        PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
+
+                                        IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
+                                        DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
+
+                                        number.CurrectDocNum = number.NextDocNum;
+                                        number.NextDocNum = number.NextDocNum + 1;
+
+                                        newPO.DocNum = "PO" + number.CurrectDocNum;
+
+                                        docos.CommitChanges();
+
+                                        if (pobaobj.VendorCode != null)
                                         {
-                                            newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.PriKey);
                                         }
-                                        if (dtl.ItemGroup != null)
+                                        if (pobaobj.Warehouse != null)
                                         {
-                                            newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
                                         }
-                                        newPOItem.BaseDoc = pobaobj.DocNum;
-                                        newPOItem.BaseOid = dtl.Oid.ToString();
-                                        newPOItem.OpenQuantity = dtl.Quantity;
-                                        newPOItem.Quantity = dtl.Quantity;
-                                        if (dtl.Tax != null)
+                                        if (pobaobj.Department != null)
                                         {
-                                            newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
+                                        }
+                                        if (pobaobj.ExpenditureType != null)
+                                        {
+                                            newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
+                                        }
+                                        if (pobaobj.ItemGroup != null)
+                                        {
+                                            newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
+                                        }
+                                        if (pobaobj.CompanyAddress != null)
+                                        {
+                                            newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
+                                        }
+                                        newPO.DocStatus = DocStatus.Submit;
+
+                                        PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+
+                                        foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
+                                        {
+                                            newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
+                                            newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.Unitprice = dtl.Unitprice;
+                                            if (dtl.ExpenditureType != null)
+                                            {
+                                                newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            }
+                                            if (dtl.ItemGroup != null)
+                                            {
+                                                newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            }
+                                            if (dtl.CostCenter != null)
+                                            {
+                                                newPOItem.CostCenter = addos.GetObjectByKey<vwCostCenter>(dtl.CostCenter.PrcCode);
+                                            }
+                                            newPOItem.BaseDoc = pobaobj.DocNum;
+                                            newPOItem.BaseOid = dtl.Oid.ToString();
+                                            newPOItem.OpenQuantity = dtl.Quantity;
+                                            newPOItem.Quantity = dtl.Quantity;
+                                            if (dtl.Tax != null)
+                                            {
+                                                newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            }
+                                            newPOItem.Discount = dtl.Discount;
+                                            newPOItem.Vehicle = dtl.Vehicle;
+
+                                            newPO.PurchaseOrderDetails.Add(newPOItem);
                                         }
 
-                                        newPO.PurchaseOrderDetails.Add(newPOItem);
+                                        addos.CommitChanges();
+                                        #endregion
+
+                                        pobaos.CommitChanges();
                                     }
-
-                                    addos.CommitChanges();
-                                    #endregion
-
-                                    pobaos.CommitChanges();
                                 }
-                            }
-                            else if (pobaobj.Billing == Billing.Annually)
-                            {
-                                if (DateTime.Now.Date == pobaobj.PreviousDate.AddYears(1).Date)
+                                else if (pobaobj.Billing == Billing.Annually)
                                 {
-                                    //            #region Post PO BA
-                                    //            if (!sap.oCom.InTransaction) sap.oCom.StartTransaction();
-
-                                    //            int temppo = 0;
-
-                                    //            temppo = PostPOBAtoSAP(pobaobj, ObjectSpaceProvider, sap);
-                                    //            if (temppo == 1)
-                                    //            {
-                                    //                if (sap.oCom.InTransaction)
-                                    //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
-
-                                    //                pobaobj.Sap = true;
-                                    //                pobaobj.PreviousDate = DateTime.Now;
-
-                                    //                PurchaseBlanketAgreementDocStatus ds = pobaos.CreateObject<PurchaseBlanketAgreementDocStatus>();
-                                    //                ds.CreateUser = pobaos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
-                                    //                ds.CreateDate = DateTime.Now;
-                                    //                ds.DocStatus = dtlpoba.DocStatus;
-                                    //                ds.DocRemarks = "Posted SAP";
-                                    //                pobaobj.PurchaseBlanketAgreementDocStatus.Add(ds);
-
-                                    //                GC.Collect();
-                                    //            }
-                                    //            else if (temppo <= 0)
-                                    //            {
-                                    //                if (sap.oCom.InTransaction)
-                                    //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
-
-                                    //                GC.Collect();
-                                    //            }
-                                    //            #endregion
-
-                                    #region Add PO
-                                    pobaobj.PreviousDate = DateTime.Now;
-                                    IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
-                                    PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
-
-                                    IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
-                                    DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
-
-                                    number.CurrectDocNum = number.NextDocNum;
-                                    number.NextDocNum = number.NextDocNum + 1;
-
-                                    newPO.DocNum = "PO" + number.CurrectDocNum;
-
-                                    docos.CommitChanges();
-
-                                    if (pobaobj.VendorCode != null)
+                                    if (DateTime.Now.Date == pobaobj.PreviousDate.AddYears(1).Date)
                                     {
-                                        newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.CardCode);
-                                    }
-                                    if (pobaobj.Warehouse != null)
-                                    {
-                                        newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
-                                    }
-                                    if (pobaobj.Department != null)
-                                    {
-                                        newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
-                                    }
-                                    if (pobaobj.ExpenditureType != null)
-                                    {
-                                        newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
-                                    }
-                                    if (pobaobj.ItemGroup != null)
-                                    {
-                                        newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
-                                    }
-                                    if (pobaobj.CompanyAddress != null)
-                                    {
-                                        newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
-                                    }
-                                    newPO.DocStatus = DocStatus.New;
+                                        //            #region Post PO BA
+                                        //            if (!sap.oCom.InTransaction) sap.oCom.StartTransaction();
 
-                                    PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+                                        //            int temppo = 0;
 
-                                    foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
-                                    {
-                                        newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
-                                        newPOItem.ItemDesc = dtl.ItemDesc;
-                                        newPOItem.Unitprice = dtl.Unitprice;
-                                        if (dtl.ExpenditureType != null)
+                                        //            temppo = PostPOBAtoSAP(pobaobj, ObjectSpaceProvider, sap);
+                                        //            if (temppo == 1)
+                                        //            {
+                                        //                if (sap.oCom.InTransaction)
+                                        //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit);
+
+                                        //                pobaobj.Sap = true;
+                                        //                pobaobj.PreviousDate = DateTime.Now;
+
+                                        //                PurchaseBlanketAgreementDocStatus ds = pobaos.CreateObject<PurchaseBlanketAgreementDocStatus>();
+                                        //                ds.CreateUser = pobaos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
+                                        //                ds.CreateDate = DateTime.Now;
+                                        //                ds.DocStatus = dtlpoba.DocStatus;
+                                        //                ds.DocRemarks = "Posted SAP";
+                                        //                pobaobj.PurchaseBlanketAgreementDocStatus.Add(ds);
+
+                                        //                GC.Collect();
+                                        //            }
+                                        //            else if (temppo <= 0)
+                                        //            {
+                                        //                if (sap.oCom.InTransaction)
+                                        //                    sap.oCom.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack);
+
+                                        //                GC.Collect();
+                                        //            }
+                                        //            #endregion
+
+                                        #region Add PO
+                                        pobaobj.PreviousDate = DateTime.Now;
+                                        IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
+                                        PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
+
+                                        IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
+                                        DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
+
+                                        number.CurrectDocNum = number.NextDocNum;
+                                        number.NextDocNum = number.NextDocNum + 1;
+
+                                        newPO.DocNum = "PO" + number.CurrectDocNum;
+
+                                        docos.CommitChanges();
+
+                                        if (pobaobj.VendorCode != null)
                                         {
-                                            newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.PriKey);
                                         }
-                                        if (dtl.ItemGroup != null)
+                                        if (pobaobj.Warehouse != null)
                                         {
-                                            newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
                                         }
-                                        newPOItem.BaseDoc = pobaobj.DocNum;
-                                        newPOItem.BaseOid = dtl.Oid.ToString();
-                                        newPOItem.OpenQuantity = dtl.Quantity;
-                                        newPOItem.Quantity = dtl.Quantity;
-                                        if (dtl.Tax != null)
+                                        if (pobaobj.Department != null)
                                         {
-                                            newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
+                                        }
+                                        if (pobaobj.ExpenditureType != null)
+                                        {
+                                            newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
+                                        }
+                                        if (pobaobj.ItemGroup != null)
+                                        {
+                                            newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
+                                        }
+                                        if (pobaobj.CompanyAddress != null)
+                                        {
+                                            newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
+                                        }
+                                        newPO.DocStatus = DocStatus.Submit;
+
+                                        PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+
+                                        foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
+                                        {
+                                            newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
+                                            newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.Unitprice = dtl.Unitprice;
+                                            if (dtl.ExpenditureType != null)
+                                            {
+                                                newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            }
+                                            if (dtl.ItemGroup != null)
+                                            {
+                                                newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            }
+                                            if (dtl.CostCenter != null)
+                                            {
+                                                newPOItem.CostCenter = addos.GetObjectByKey<vwCostCenter>(dtl.CostCenter.PrcCode);
+                                            }
+                                            newPOItem.BaseDoc = pobaobj.DocNum;
+                                            newPOItem.BaseOid = dtl.Oid.ToString();
+                                            newPOItem.OpenQuantity = dtl.Quantity;
+                                            newPOItem.Quantity = dtl.Quantity;
+                                            if (dtl.Tax != null)
+                                            {
+                                                newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            }
+                                            newPOItem.Discount = dtl.Discount;
+                                            newPOItem.Vehicle = dtl.Vehicle;
+
+                                            newPO.PurchaseOrderDetails.Add(newPOItem);
                                         }
 
-                                        newPO.PurchaseOrderDetails.Add(newPOItem);
+                                        addos.CommitChanges();
+                                        #endregion
+
+                                        pobaos.CommitChanges();
                                     }
-
-                                    addos.CommitChanges();
-                                    #endregion
-
-                                    pobaos.CommitChanges();
                                 }
-                            }
 
-                            temp = ConfigurationManager.AppSettings["BATrigger"].ToString().ToUpper();
-                            if (temp == "Y" || temp == "YES" || temp == "TRUE" || temp == "1")
-                            {
-                                if (pobaobj.ManualDate.Date == DateTime.Now.Date)
+                                temp = ConfigurationManager.AppSettings["BATrigger"].ToString().ToUpper();
+                                if (temp == "Y" || temp == "YES" || temp == "TRUE" || temp == "1")
                                 {
-                                    #region Add PO
-                                    pobaobj.PreviousDate = DateTime.Now;
-                                    pobaobj.ManualDate = nulldate;
-                                    IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
-                                    PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
-
-                                    IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
-                                    DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
-
-                                    number.CurrectDocNum = number.NextDocNum;
-                                    number.NextDocNum = number.NextDocNum + 1;
-
-                                    newPO.DocNum = "PO" + number.CurrectDocNum;
-
-                                    docos.CommitChanges();
-
-                                    if (pobaobj.VendorCode != null)
+                                    if (pobaobj.ManualDate.Date == DateTime.Now.Date)
                                     {
-                                        newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.CardCode);
-                                    }
-                                    if (pobaobj.Warehouse != null)
-                                    {
-                                        newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
-                                    }
-                                    if (pobaobj.Department != null)
-                                    {
-                                        newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
-                                    }
-                                    if (pobaobj.ExpenditureType != null)
-                                    {
-                                        newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
-                                    }
-                                    if (pobaobj.ItemGroup != null)
-                                    {
-                                        newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
-                                    }
-                                    if (pobaobj.CompanyAddress != null)
-                                    {
-                                        newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
-                                    }
-                                    newPO.DocStatus = DocStatus.New;
+                                        #region Add PO
+                                        pobaobj.PreviousDate = DateTime.Now;
+                                        pobaobj.ManualDate = nulldate;
+                                        IObjectSpace addos = ObjectSpaceProvider.CreateObjectSpace();
+                                        PurchaseOrders newPO = addos.CreateObject<PurchaseOrders>();
 
-                                    PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+                                        IObjectSpace docos = ObjectSpaceProvider.CreateObjectSpace();
+                                        DocTypes number = docos.FindObject<DocTypes>(new BinaryOperator("BoCode", DocTypeList.PurchaseOrders));
 
-                                    foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
-                                    {
-                                        newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
-                                        newPOItem.ItemDesc = dtl.ItemDesc;
-                                        newPOItem.Unitprice = dtl.Unitprice;
-                                        if (dtl.ExpenditureType != null)
+                                        number.CurrectDocNum = number.NextDocNum;
+                                        number.NextDocNum = number.NextDocNum + 1;
+
+                                        newPO.DocNum = "PO" + number.CurrectDocNum;
+
+                                        docos.CommitChanges();
+
+                                        if (pobaobj.VendorCode != null)
                                         {
-                                            newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            newPO.VendorCode = addos.GetObjectByKey<vwVendors>(pobaobj.VendorCode.PriKey);
                                         }
-                                        if (dtl.ItemGroup != null)
+                                        if (pobaobj.Warehouse != null)
                                         {
-                                            newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            newPO.Warehouse = addos.GetObjectByKey<vwWarehouse>(pobaobj.Warehouse.BoCode);
                                         }
-                                        newPOItem.BaseDoc = pobaobj.DocNum;
-                                        newPOItem.BaseOid = dtl.Oid.ToString();
-                                        newPOItem.OpenQuantity = dtl.Quantity;
-                                        newPOItem.Quantity = dtl.Quantity;
-                                        if (dtl.Tax != null)
+                                        if (pobaobj.Department != null)
                                         {
-                                            newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            newPO.Department = addos.GetObjectByKey<Department>(pobaobj.Department.Oid);
+                                        }
+                                        if (pobaobj.ExpenditureType != null)
+                                        {
+                                            newPO.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(pobaobj.ExpenditureType.Oid);
+                                        }
+                                        if (pobaobj.ItemGroup != null)
+                                        {
+                                            newPO.ItemGroup = addos.GetObjectByKey<vwItemGroup>(pobaobj.ItemGroup.Code);
+                                        }
+                                        if (pobaobj.CompanyAddress != null)
+                                        {
+                                            newPO.CompanyAddress = addos.GetObjectByKey<CompanyAddress>(pobaobj.CompanyAddress.Oid);
+                                        }
+                                        newPO.DocStatus = DocStatus.Submit;
+
+                                        foreach (PurchaseBlanketAgreementDetails dtl in pobaobj.PurchaseBlanketAgreementDetails)
+                                        {
+                                            PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
+                                            newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
+                                            newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.Unitprice = dtl.Unitprice;
+                                            if (dtl.ExpenditureType != null)
+                                            {
+                                                newPOItem.ExpenditureType = addos.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                                            }
+                                            if (dtl.ItemGroup != null)
+                                            {
+                                                newPOItem.ItemGroup = addos.GetObjectByKey<vwItemGroup>(dtl.ItemGroup.Code);
+                                            }
+                                            if (dtl.CostCenter != null)
+                                            {
+                                                newPOItem.CostCenter = addos.GetObjectByKey<vwCostCenter>(dtl.CostCenter.PrcCode);
+                                            }
+                                            newPOItem.BaseDoc = pobaobj.DocNum;
+                                            newPOItem.BaseOid = dtl.Oid.ToString();
+                                            newPOItem.OpenQuantity = dtl.Quantity;
+                                            newPOItem.Quantity = dtl.Quantity;
+                                            if (dtl.Tax != null)
+                                            {
+                                                newPOItem.Tax = addos.GetObjectByKey<vwTax>(dtl.Tax.BoCode);
+                                            }
+                                            newPOItem.Discount = dtl.Discount;
+                                            newPOItem.Vehicle = dtl.Vehicle;
+
+                                            newPO.PurchaseOrderDetails.Add(newPOItem);
                                         }
 
-                                        newPO.PurchaseOrderDetails.Add(newPOItem);
+                                        addos.CommitChanges();
+                                        #endregion
                                     }
-
-                                    addos.CommitChanges();
-                                    #endregion
                                 }
-                            }
 
-                            pobaos.CommitChanges();
+                                pobaos.CommitChanges();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -856,6 +888,13 @@ namespace PortalIntegration
                     oDoc.DocDate = oTargetDoc.PostingDate;
                     oDoc.UserFields.Fields.Item("U_PortalNum").Value = oTargetDoc.DocNum;
                     oDoc.Comments = oTargetDoc.Remarks;
+                    if (oTargetDoc.CompanyAddress != null)
+                    {
+                        if (oTargetDoc.CompanyAddress.Address != null)
+                        {
+                            oDoc.Address2 = oTargetDoc.CompanyAddress.Address;
+                        }
+                    }
 
                     if (sapempid > 0)
                         oDoc.DocumentsOwner = sapempid;
@@ -868,7 +907,20 @@ namespace PortalIntegration
                         cnt++;
                         if (cnt == 1)
                         {
-                            oDoc.JournalMemo = oTargetDoc.VendorCode.CardCode + "-" + dtl.Item.ItemCode;
+                            string journal = oTargetDoc.VendorCode.CardCode + "-" + dtl.Item.ItemName;
+                            int countchar = 0;
+                            foreach (char c in journal)
+                            {
+                                countchar++;
+                            }
+                            if (countchar >= 50)
+                            {
+                                oDoc.JournalMemo = journal.Substring(1, 49).ToString();
+                            }
+                            else
+                            {
+                                oDoc.JournalMemo = journal;
+                            }
                         }
                         else
                         {
@@ -889,6 +941,14 @@ namespace PortalIntegration
 
                         oDoc.Lines.ItemCode = dtl.Item.ItemCode;
                         oDoc.Lines.ItemDescription = dtl.ItemDesc;
+                        if (dtl.ItemDetails != null)
+                        {
+                            oDoc.Lines.ItemDetails = dtl.ItemDetails.ToString().ToUpper();
+                        }
+                        if (oTargetDoc.VehicleNo != null)
+                        {
+                            oDoc.Lines.UserFields.Fields.Item("U_Ref2").Value = oTargetDoc.VehicleNo;
+                        }
                         oDoc.Lines.Quantity = (double)dtl.Quantity;
                         oDoc.Lines.UnitPrice = (double)dtl.Unitprice;
                     }
@@ -1053,6 +1113,13 @@ namespace PortalIntegration
                     oDoc.DocDate = postdate;
                     oDoc.UserFields.Fields.Item("U_PortalNum").Value = oTargetDoc.DocNum;
                     oDoc.Comments = oTargetDoc.Remarks;
+                    if (oTargetDoc.CompanyAddress != null)
+                    {
+                        if (oTargetDoc.CompanyAddress.Address != null)
+                        {
+                            oDoc.Address2 = oTargetDoc.CompanyAddress.Address;
+                        }
+                    }
 
                     if (sapempid > 0)
                         oDoc.DocumentsOwner = sapempid;
@@ -1066,6 +1133,20 @@ namespace PortalIntegration
                             cnt++;
                             if (cnt == 1)
                             {
+                                string journal = oTargetDoc.VendorCode.CardCode + "-" + dtl.Item.ItemName;
+                                int countchar = 0;
+                                foreach (char c in journal)
+                                {
+                                    countchar++;
+                                }
+                                if (countchar >= 50)
+                                {
+                                    oDoc.JournalMemo = journal.Substring(1, 49).ToString();
+                                }
+                                else
+                                {
+                                    oDoc.JournalMemo = journal;
+                                }
                             }
                             else
                             {
@@ -1084,6 +1165,10 @@ namespace PortalIntegration
 
                             oDoc.Lines.ItemCode = dtl.Item.ItemCode;
                             oDoc.Lines.ItemDescription = dtl.ItemDesc;
+                            if (dtl.ItemDetails != null)
+                            {
+                                oDoc.Lines.ItemDetails = dtl.ItemDetails.ToString().ToUpper();
+                            }
                             oDoc.Lines.Quantity = (double)dtl.Quantity;// * (double)link.Packsize;
                             oDoc.Lines.UnitPrice = (double)dtl.Unitprice;// / oDoc.Lines.Quantity;
 
@@ -1277,6 +1362,20 @@ namespace PortalIntegration
                             cnt++;
                             if (cnt == 1)
                             {
+                                string journal = oTargetDoc.VendorCode.CardCode + "-" + dtl.Item.ItemName;
+                                int countchar = 0;
+                                foreach (char c in journal)
+                                {
+                                    countchar++;
+                                }
+                                if (countchar >= 50)
+                                {
+                                    oDoc.JournalMemo = journal.Substring(1, 49).ToString();
+                                }
+                                else
+                                {
+                                    oDoc.JournalMemo = journal;
+                                }
                             }
                             else
                             {
@@ -1290,6 +1389,7 @@ namespace PortalIntegration
 
                             oDoc.Lines.ItemCode = dtl.Item.ItemCode;
                             oDoc.Lines.ItemDescription = dtl.ItemDesc;
+                            oDoc.Lines.ItemDetails = dtl.ItemDetails.ToString().ToUpper();
                             oDoc.Lines.Quantity = (double)dtl.Quantity;
                         }
                     }

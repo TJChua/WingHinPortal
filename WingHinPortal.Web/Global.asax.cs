@@ -59,6 +59,7 @@ namespace WingHinPortal.Web {
             WingHinPortal.Module.BusinessObjects.GeneralSettings.appurl = System.Web.HttpContext.Current.Request.Url.AbsoluteUri; // + requestManager.GetQueryString(shortcut)
 
             #endregion
+            WebApplication.Instance.CustomizeFormattingCulture += Instance_CustomizeFormattingCulture;
 
             if (ConfigurationManager.ConnectionStrings["ConnectionString"] != null) {
                 WebApplication.Instance.ConnectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
@@ -75,6 +76,10 @@ namespace WingHinPortal.Web {
 #endif
             WebApplication.Instance.Setup();
             WebApplication.Instance.Start();
+        }
+        private void Instance_CustomizeFormattingCulture(object sender, CustomizeFormattingCultureEventArgs e)
+        {
+            e.FormattingCulture.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
         }
         protected void Application_BeginRequest(Object sender, EventArgs e) {
         }

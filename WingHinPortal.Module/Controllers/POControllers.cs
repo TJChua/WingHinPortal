@@ -282,7 +282,7 @@ namespace WingHinPortal.Module.Controllers
                 SystemUsers user = (SystemUsers)SecuritySystem.CurrentUser;
                 ApprovalParameters p = (ApprovalParameters)e.PopupWindow.View.CurrentObject;
 
-                if (p.ParamString == null || p.ParamString == "")
+                if (p.AppStatus == ApprovalActions.No && (p.ParamString == null || p.ParamString == ""))
                 {
                     showMsg("Failed", "Please input approval remarks.", InformationType.Error);
                     return;
@@ -414,7 +414,7 @@ namespace WingHinPortal.Module.Controllers
                 SystemUsers user = (SystemUsers)SecuritySystem.CurrentUser;
                 ApprovalParameters p = (ApprovalParameters)e.PopupWindow.View.CurrentObject;
 
-                if (p.ParamString == null || p.ParamString == "")
+                if (p.AppStatus == ApprovalActions.No && (p.ParamString == null || p.ParamString == ""))
                 {
                     showMsg("Failed", "Please input approval remarks.", InformationType.Error);
                     return;
@@ -567,7 +567,7 @@ namespace WingHinPortal.Module.Controllers
                     break;
             }
             ((ApprovalParameters)dv.CurrentObject).IsErr = err;
-            ((ApprovalParameters)dv.CurrentObject).ActionMessage = "Press choose from approval status 'Yes or No' and press OK to CONFIRM the action and SAVE, else press Cancel.";
+            ((ApprovalParameters)dv.CurrentObject).ActionMessage = "Press Choose From Approval Status 'Approve or Reject' and Press OK to CONFIRM the action and SAVE else press Cancel.";
 
             e.View = dv;
         }
@@ -645,13 +645,22 @@ namespace WingHinPortal.Module.Controllers
 
                             newPOItem.Item = newPOItem.Session.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item));
                             newPOItem.ItemDesc = dtl.ItemDesc;
+                            newPOItem.ItemDetails = dtl.ItemDetails;
                             newPOItem.Unitprice = dtl.Unitprice;
                             newPOItem.BaseDoc = dtl.DocNum;
 
                             PurchaseRequest master = ObjectSpace.FindObject<PurchaseRequest>(CriteriaOperator.Parse("DocNum = ?", dtl.DocNum));
 
-                            newPO.ExpenditureType = newPO.Session.GetObjectByKey<ExpenditureType>(master.ExpenditureType.Oid);
-                            newPO.CompanyAddress = newPO.Session.GetObjectByKey<CompanyAddress>(master.CompanyAddress.Oid);
+                            if (master.ExpenditureType != null)
+                            {
+                                newPO.ExpenditureType = newPO.Session.GetObjectByKey<ExpenditureType>(master.ExpenditureType.Oid);
+                            }
+                            if (master.CompanyAddress != null)
+                            {
+                                newPO.CompanyAddress = newPO.Session.GetObjectByKey<CompanyAddress>(master.CompanyAddress.Oid);
+                            }
+                            newPO.Remarks = master.Remarks;
+                            newPO.Attn = master.Attn;
 
                             foreach (PurchaseRequestDetails detail in master.PurchaseRequestDetail)
                             {
@@ -676,6 +685,8 @@ namespace WingHinPortal.Module.Controllers
                                         newPOItem.CostCenter = newPOItem.Session.GetObjectByKey<vwCostCenter>(detail.CostCenter.PrcCode);
                                     }
                                     newPOItem.BaseOid = detail.Oid.ToString();
+                                    newPOItem.Discount = detail.Discount;
+                                    newPOItem.Vehicle = detail.Vehicle;
                                 }
                             }
 
@@ -704,12 +715,20 @@ namespace WingHinPortal.Module.Controllers
 
                             newPOItem.Item = newPOItem.Session.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item));
                             newPOItem.ItemDesc = dtl.ItemDesc;
+                            newPOItem.ItemDetails = dtl.ItemDetails;
                             newPOItem.Unitprice = dtl.Unitprice;
                             newPOItem.BaseDoc = dtl.DocNum;
 
                             PurchaseRequest master = ObjectSpace.FindObject<PurchaseRequest>(CriteriaOperator.Parse("DocNum = ?", dtl.DocNum));
 
-                            newPO.ExpenditureType = newPO.Session.GetObjectByKey<ExpenditureType>(master.ExpenditureType.Oid);
+                            if (master.ExpenditureType != null)
+                            {
+                                newPO.ExpenditureType = newPO.Session.GetObjectByKey<ExpenditureType>(master.ExpenditureType.Oid);
+                            }
+                            if (master.CompanyAddress != null)
+                            {
+                                newPO.CompanyAddress = newPO.Session.GetObjectByKey<CompanyAddress>(master.CompanyAddress.Oid);
+                            }
 
                             foreach (PurchaseRequestDetails detail in master.PurchaseRequestDetail)
                             {
@@ -734,6 +753,8 @@ namespace WingHinPortal.Module.Controllers
                                         newPOItem.CostCenter = newPOItem.Session.GetObjectByKey<vwCostCenter>(detail.CostCenter.PrcCode);
                                     }
                                     newPOItem.BaseOid = detail.Oid.ToString();
+                                    newPOItem.Discount = detail.Discount;
+                                    newPOItem.Vehicle = detail.Vehicle;
                                 }
                             }
 
@@ -845,11 +866,45 @@ namespace WingHinPortal.Module.Controllers
 
         private void EmailSupplier_Execute(object sender, PopupWindowShowActionExecuteEventArgs e)
         {
+            string strServer;
+            string strDatabase;
+            string strUserID;
+            string strPwd;
+            string filename = null;
             SystemUsers user = (SystemUsers)SecuritySystem.CurrentUser;
+            PurchaseOrders selectedObject = (PurchaseOrders)e.CurrentObject;
             EmailForm email = (EmailForm)e.PopupWindow.View.CurrentObject;
 
             if (email.Email != null)
             {
+                #region get layout
+                try
+                {
+                    ReportDocument doc = new ReportDocument();
+                    strServer = ConfigurationManager.AppSettings.Get("SQLserver").ToString();
+                    doc.Load(HttpContext.Current.Server.MapPath("~\\Reports\\Purchase Order.rpt"));
+                    strDatabase = ConfigurationManager.AppSettings.Get("ReportDB").ToString();
+                    strUserID = ConfigurationManager.AppSettings.Get("SQLID").ToString();
+                    strPwd = ConfigurationManager.AppSettings.Get("SQLPass").ToString();
+                    doc.DataSourceConnections[0].SetConnection(strServer, strDatabase, strUserID, strPwd);
+                    doc.Refresh();
+
+                    doc.SetParameterValue("@DocNum", selectedObject.DocNum);
+
+                    filename = ConfigurationManager.AppSettings.Get("ReportPath").ToString() + ConfigurationManager.AppSettings.Get("ReportDB").ToString()
+                        + "_" + selectedObject.DocNum + "_" + user.UserName + "_"
+                        + DateTime.Parse(selectedObject.DocDate.ToString()).ToString("yyyyMMdd") + ".pdf";
+
+                    doc.ExportToDisk(ExportFormatType.PortableDocFormat, filename);
+                    doc.Close();
+                    doc.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    genCon.showMsg("Fail", ex.Message, InformationType.Error);
+                }
+                #endregion
+
                 #region email
                 List<string> ToEmails = new List<string>();
                 string emailbody = "";
@@ -868,11 +923,13 @@ namespace WingHinPortal.Module.Controllers
 
                 if (ToEmails.Count > 0)
                 {
-                    if (genCon.SendEmail(emailsubject, emailbody, ToEmails) == 1)
+                    if (genCon.SupplierSendEmail(emailsubject, emailbody, ToEmails, filename) == 1)
                     {
                     }
                 }
                 #endregion
+
+                showMsg("Success", "Email sent.", InformationType.Success);
             }
             else
             {

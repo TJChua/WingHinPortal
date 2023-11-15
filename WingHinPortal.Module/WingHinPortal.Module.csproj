@@ -116,6 +116,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessObjects\CrReportParams.cs" />
+    <Compile Include="BusinessObjects\CrReports.cs" />
     <Compile Include="BusinessObjects\Enum.cs" />
     <Compile Include="BusinessObjects\GeneralSettings.cs" />
     <Compile Include="BusinessObjects\GoodsIssue\GoodsIssue.cs" />
@@ -165,6 +167,12 @@
     <Compile Include="BusinessObjects\View\vwTax.cs" />
     <Compile Include="BusinessObjects\View\vwVendors.cs" />
     <Compile Include="BusinessObjects\View\vwWarehouse.cs" />
+    <Compile Include="Controllers\CrReportController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controllers\CrReportController.designer.cs">
+      <DependentUpon>CrReportController.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\FilterControllers.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -237,6 +245,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controllers\CrReportController.resx">
+      <DependentUpon>CrReportController.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controllers\GIControllers.resx">
       <DependentUpon>GIControllers.cs</DependentUpon>
     </EmbeddedResource>
@@ -320,6 +331,15 @@
       <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
       <SubType>Designer</SubType>
     </None>
+    <None Include="UnusableNodes10.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="UnusableNodes11.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <EmbeddedResource Include="Images\Delete.png" />
     <Content Include="Welcome.html" />
   </ItemGroup>
   <ItemGroup />

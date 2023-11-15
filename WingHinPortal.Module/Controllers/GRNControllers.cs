@@ -217,19 +217,28 @@ namespace WingHinPortal.Module.Controllers
                         PurchaseOrders temppo = os.FindObject<PurchaseOrders>(new BinaryOperator("DocNum", dtl.PortalDocNum));
                         if (temppo != null)
                         {
-                            newgrn.ExpenditureType = newgrn.Session.GetObjectByKey<ExpenditureType>(temppo.ExpenditureType.Oid);
+                            if (temppo.ExpenditureType != null)
+                            {
+                                newgrn.ExpenditureType = newgrn.Session.GetObjectByKey<ExpenditureType>(temppo.ExpenditureType.Oid);
+                            }
+                            if (temppo.CompanyAddress != null)
+                            {
+                                newgrn.CompanyAddress = newgrn.Session.GetObjectByKey<CompanyAddress>(temppo.CompanyAddress.Oid);
+                            }
                         }
 
                         GoodsReceiptDetails newGRNItem = os.CreateObject<GoodsReceiptDetails>();
 
                         newGRNItem.Item = newGRNItem.Session.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item));
                         newGRNItem.ItemDesc = dtl.ItemDesc;
+                        newGRNItem.ItemDetails = dtl.ItemDetails;
                         newGRNItem.OpenQuantity = dtl.Quantity;
                         newGRNItem.Quantity = dtl.Quantity;
                         newGRNItem.Unitprice = dtl.Unitprice;
                         newGRNItem.BaseDoc = dtl.DocNum;
                         newGRNItem.BaseOid = dtl.Baseline.ToString();
                         newGRNItem.BaseEntry = dtl.BaseEntry;
+                        newGRNItem.CostCenter = newGRNItem.Session.FindObject<vwCostCenter>(CriteriaOperator.Parse("PrcCode = ?", dtl.CostCenter));
 
                         newgrn.GoodsReceiptDetails.Add(newGRNItem);
                     }

@@ -54,7 +54,7 @@ namespace WingHinPortal.Module.BusinessObjects.View
         public int Baseline { get; set; }
 
         [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(true)]
-        [Appearance("Baseline", Enabled = false)]
+        [Appearance("BaseEntry", Enabled = false)]
         public int BaseEntry { get; set; }
 
         [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(true)]
@@ -64,6 +64,10 @@ namespace WingHinPortal.Module.BusinessObjects.View
         [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
         [Appearance("ItemDesc", Enabled = false)]
         public string ItemDesc { get; set; }
+
+        [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
+        [Appearance("ItemDetails", Enabled = false)]
+        public string ItemDetails { get; set; }
 
         [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(true)]
         [Appearance("Quantity", Enabled = false)]
@@ -80,6 +84,22 @@ namespace WingHinPortal.Module.BusinessObjects.View
         [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
         [Appearance("VendorCode", Enabled = false)]
         public string VendorCode { get; set; }
+
+        [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(false)]
+        [Appearance("VendorName", Enabled = false)]
+        public string VendorName { get; set; }
+
+        [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(false)]
+        [Appearance("Requester", Enabled = false)]
+        public string Requester { get; set; }
+
+        [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(false)]
+        [Appearance("CostCenter", Enabled = false)]
+        public string CostCenter { get; set; }
+
+        [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(false)]
+        [Appearance("DocDate", Enabled = false)]
+        public string DocDate { get; set; }
 
         [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
         [Appearance("PortalDocNum", Enabled = false)]

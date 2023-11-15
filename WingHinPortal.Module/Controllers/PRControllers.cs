@@ -256,7 +256,7 @@ namespace WingHinPortal.Module.Controllers
                 SystemUsers user = (SystemUsers)SecuritySystem.CurrentUser;
                 ApprovalParameters p = (ApprovalParameters)e.PopupWindow.View.CurrentObject;
 
-                if (p.ParamString == null || p.ParamString == "")
+                if (p.AppStatus == ApprovalActions.No && (p.ParamString == null || p.ParamString == ""))
                 {
                     showMsg("Failed", "Please input approval remarks.", InformationType.Error);
                     return;
@@ -388,7 +388,7 @@ namespace WingHinPortal.Module.Controllers
                 SystemUsers user = (SystemUsers)SecuritySystem.CurrentUser;
                 ApprovalParameters p = (ApprovalParameters)e.PopupWindow.View.CurrentObject;
 
-                if (p.ParamString == null || p.ParamString == "")
+                if (p.AppStatus == ApprovalActions.No && (p.ParamString == null || p.ParamString == ""))
                 {
                     showMsg("Failed", "Please input approval remarks.", InformationType.Error);
                     return;
@@ -541,7 +541,7 @@ namespace WingHinPortal.Module.Controllers
                     break;
             }
             ((ApprovalParameters)dv.CurrentObject).IsErr = err;
-            ((ApprovalParameters)dv.CurrentObject).ActionMessage = "Press choose from approval status 'Yes or No' and press OK to CONFIRM the action and SAVE, else press Cancel.";
+            ((ApprovalParameters)dv.CurrentObject).ActionMessage = "Press Choose From Approval Status 'Approve or Reject' and Press OK to CONFIRM the action and SAVE else press Cancel.";
 
             e.View = dv;
         }

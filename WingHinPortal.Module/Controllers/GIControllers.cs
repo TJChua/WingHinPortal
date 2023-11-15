@@ -217,12 +217,17 @@ namespace WingHinPortal.Module.Controllers
                     foreach (vwPRInternalPO dtl in e.PopupWindowViewSelectedObjects)
                     {
                         newissue.VendorCode = newissue.Session.GetObjectByKey<vwVendors>(dtl.VendorCode);
-                        newissue.ExpenditureType = newissue.Session.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                        if (dtl.ExpenditureType != null)
+                        {
+                            newissue.ExpenditureType = newissue.Session.GetObjectByKey<ExpenditureType>(dtl.ExpenditureType.Oid);
+                        }
 
                         GoodsIssueDetails newissueItem = os.CreateObject<GoodsIssueDetails>();
 
                         newissueItem.Item = newissueItem.Session.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item));
                         newissueItem.ItemDesc = dtl.ItemDesc;
+                        newissueItem.ItemDetails = dtl.ItemDetails;
+                        newissueItem.CostCenter = newissueItem.Session.FindObject<vwCostCenter>(CriteriaOperator.Parse("PrcCode = ?", dtl.CostCenter));
                         newissueItem.BaseDoc = dtl.DocNum;
 
                         PurchaseRequest master = ObjectSpace.FindObject<PurchaseRequest>(CriteriaOperator.Parse("DocNum = ?", dtl.DocNum));
@@ -286,13 +291,27 @@ namespace WingHinPortal.Module.Controllers
                         GoodsReceipt tempgrn = os.FindObject<GoodsReceipt>(new BinaryOperator("DocNum", dtl.PortalDocNum));
                         if (tempgrn != null)
                         {
-                            newissue.ExpenditureType = newissue.Session.GetObjectByKey<ExpenditureType>(tempgrn.ExpenditureType.Oid);
+                            if (tempgrn.ExpenditureType != null)
+                            {
+                                newissue.ExpenditureType = newissue.Session.GetObjectByKey<ExpenditureType>(tempgrn.ExpenditureType.Oid);
+                            }
                         }
 
                         GoodsIssueDetails newissueItem = os.CreateObject<GoodsIssueDetails>();
 
                         newissueItem.Item = newissueItem.Session.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item));
                         newissueItem.ItemDesc = dtl.ItemDesc;
+                        newissueItem.ItemDetails = dtl.ItemDetails;
+                        if (tempgrn != null)
+                        {
+                            foreach(GoodsReceiptDetails grndetail in tempgrn.GoodsReceiptDetails)
+                            {
+                                if (grndetail.Item.ItemCode == dtl.Item)
+                                {
+                                    newissueItem.CostCenter = newissueItem.Session.FindObject<vwCostCenter>(CriteriaOperator.Parse("PrcCode = ?", grndetail.CostCenter.PrcCode));
+                                }
+                            }
+                        }
                         newissueItem.OpenQuantity = dtl.Quantity;
                         newissueItem.Quantity = dtl.Quantity;
                         newissueItem.BaseOid = dtl.Baseline.ToString();

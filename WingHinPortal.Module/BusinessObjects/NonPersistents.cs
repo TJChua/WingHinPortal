@@ -104,4 +104,39 @@ namespace WingHinPortal.Module.BusinessObjects
         [Browsable(false)]
         public bool IsErr { get; set; }
     }
+
+    [NonPersistent]
+    public class DateFromTo : XPObject
+    { // Inherit from a different class to provide a custom primary key, concurrency and deletion behavior, etc. (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument113146.aspx).
+        public DateFromTo(Session session)
+            : base(session)
+        {
+        }
+        public override void AfterConstruction()
+        {
+            base.AfterConstruction();
+            // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
+        }
+        // Add this property as the key member in the CustomizeTypesInfo event
+        [XafDisplayName("Date From")]
+        [Appearance("DateFrom", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Criteria = "IsErr")]
+        [NonPersistentDc]
+        public DateTime DateFrom { get; set; }
+
+        [XafDisplayName("Date To")]
+        [Appearance("DateTo", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Criteria = "IsErr")]
+        [NonPersistentDc]
+        public DateTime DateTo { get; set; }
+
+        //[XafDisplayName("Important")]
+        [Appearance("ActionMessage", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Criteria = "IsErr")]
+        [Appearance("ActionMessage2", Enabled = false, FontColor = "Red")]
+        [NonPersistentDc]
+        public string ActionMessage { get; set; }
+
+        [Browsable(false)]
+        //[NonPersistentDc]
+        public bool IsErr { get; set; }
+    }
+
 }

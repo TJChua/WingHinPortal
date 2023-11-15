@@ -19,7 +19,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsIssue
 {
     [DefaultClassOptions]
     //[Appearance("HideNew", AppearanceItemType.Action, "True", TargetItems = "New", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
-    [Appearance("HideDelete", AppearanceItemType.Action, "True", TargetItems = "Delete", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
+    //[Appearance("HideDelete", AppearanceItemType.Action, "True", TargetItems = "Delete", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
     [Appearance("LinkDoc", AppearanceItemType = "Action", TargetItems = "Link", Context = "ListView", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide)]
     [Appearance("UnlinkDoc", AppearanceItemType = "Action", TargetItems = "Unlink", Context = "ListView", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide)]
     [XafDisplayName("Goods Issue Details")]
@@ -38,6 +38,10 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsIssue
 
             //Tax = Session.FindObject<vwTax>(new BinaryOperator("BoCode", "X0"));
             Quantity = 1;
+            if (CreateUser.Staff.CostCenter != null)
+            {
+                CostCenter = Session.FindObject<vwCostCenter>(new BinaryOperator("PrcCode", CreateUser.Staff.CostCenter.PrcCode));
+            }
         }
 
         private SystemUsers _CreateUser;
@@ -107,10 +111,12 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsIssue
                 if (!IsLoading && value != null)
                 {
                     ItemDesc = Item.ItemName;
+                    UOM = Item.UOM;
                 }
                 else if (!IsLoading && value == null)
                 {
                     ItemDesc = null;
+                    UOM = null;
                 }
             }
         }
@@ -125,6 +131,31 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsIssue
             set
             {
                 SetPropertyValue("ItemDesc", ref _ItemDesc, value);
+            }
+        }
+
+        private string _ItemDetails;
+        [XafDisplayName("Item Details")]
+        [Index(5), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
+        public string ItemDetails
+        {
+            get { return _ItemDetails; }
+            set
+            {
+                SetPropertyValue("ItemDetails", ref _ItemDetails, value);
+            }
+        }
+
+        private string _UOM;
+        [XafDisplayName("UOM")]
+        [Appearance("UOM", Enabled = false)]
+        [Index(6), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
+        public string UOM
+        {
+            get { return _UOM; }
+            set
+            {
+                SetPropertyValue("UOM", ref _UOM, value);
             }
         }
 
@@ -170,7 +201,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsIssue
 
         private ExpenditureType _ExpenditureType;
         [ImmediatePostData]
-        [XafDisplayName("ExpenditureType")]
+        [XafDisplayName("Expenditure Type")]
         [Index(13), VisibleInDetailView(false), VisibleInListView(false), VisibleInLookupListView(false)]
         public ExpenditureType ExpenditureType
         {
@@ -217,6 +248,21 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsIssue
             set
             {
                 SetPropertyValue("BaseOid", ref _BaseOid, value);
+            }
+        }
+
+        private vwCostCenter _CostCenter;
+        [NoForeignKey]
+        [ImmediatePostData]
+        [XafDisplayName("CostCenter")]
+        [RuleRequiredField(DefaultContexts.Save)]
+        [Index(30), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(false)]
+        public vwCostCenter CostCenter
+        {
+            get { return _CostCenter; }
+            set
+            {
+                SetPropertyValue("CostCenter", ref _CostCenter, value);
             }
         }
 

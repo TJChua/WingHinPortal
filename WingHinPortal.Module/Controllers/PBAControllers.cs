@@ -37,23 +37,26 @@ namespace WingHinPortal.Module.Controllers
         {
             base.OnViewControlsCreated();
             // Access and customize the target View control.
-            if (View.Id == "PurchaseOrders_DetailView")
+            if (View.Id == "PurchaseBlanketAgreement_DetailView")
             {
                 if (((DetailView)View).ViewEditMode == ViewEditMode.Edit)
                 {
                     this.SubmitPBA.Active.SetItemValue("Enabled", false);
                     this.CancelPBA.Active.SetItemValue("Enabled", false);
+                    this.TerminatePBA.Active.SetItemValue("Enabled", false);
                 }
                 else
                 {
                     this.SubmitPBA.Active.SetItemValue("Enabled", true);
                     this.CancelPBA.Active.SetItemValue("Enabled", true);
+                    this.TerminatePBA.Active.SetItemValue("Enabled", true);
                 }
             }
             else
             {
                 this.SubmitPBA.Active.SetItemValue("Enabled", false);
                 this.CancelPBA.Active.SetItemValue("Enabled", false);
+                this.TerminatePBA.Active.SetItemValue("Enabled", false);
             }
         }
         protected override void OnDeactivated()
@@ -184,6 +187,60 @@ namespace WingHinPortal.Module.Controllers
         }
 
         private void CancelPBA_CustomizePopupWindowParams(object sender, CustomizePopupWindowParamsEventArgs e)
+        {
+            IObjectSpace os = Application.CreateObjectSpace();
+            DetailView dv = Application.CreateDetailView(os, os.CreateObject<StringParameters>(), true);
+            dv.ViewEditMode = DevExpress.ExpressApp.Editors.ViewEditMode.Edit;
+            ((StringParameters)dv.CurrentObject).IsErr = false;
+            ((StringParameters)dv.CurrentObject).ActionMessage = "Press OK to CONFIRM the action and SAVE, else press Cancel.";
+
+            e.View = dv;
+        }
+
+        private void TerminatePBA_Execute(object sender, PopupWindowShowActionExecuteEventArgs e)
+        {
+            if (e.PopupWindowViewSelectedObjects.Count == 1)
+            {
+                PurchaseBlanketAgreement selectedObject = (PurchaseBlanketAgreement)e.CurrentObject;
+                StringParameters p = (StringParameters)e.PopupWindow.View.CurrentObject;
+                if (p.IsErr) return;
+
+                SystemUsers user = (SystemUsers)SecuritySystem.CurrentUser;
+
+                if (selectedObject.PurchaseBlanketAgreementAttachment.Count() <= 0)
+                {
+                    showMsg("Error", "Please attach attachment before terminate.", InformationType.Error);
+                    return;
+                }
+
+                if (selectedObject.TerminateDate < DateTime.Today)
+                {
+                    showMsg("Error", "No date/No back date.", InformationType.Error);
+                    return;
+                }
+
+                selectedObject.DocStatus = DocStatus.Terminated;
+                selectedObject.TerminateDate = DateTime.Now;
+                PurchaseBlanketAgreementDocStatus ds = ObjectSpace.CreateObject<PurchaseBlanketAgreementDocStatus>();
+                ds.DocStatus = DocStatus.Terminated;
+                ds.DocRemarks = p.ParamString;
+                selectedObject.PurchaseBlanketAgreementDocStatus.Add(ds);
+
+                ObjectSpace.CommitChanges();
+                ObjectSpace.Refresh();
+
+                IObjectSpace os = Application.CreateObjectSpace();
+                PurchaseBlanketAgreement potrx = os.FindObject<PurchaseBlanketAgreement>(new BinaryOperator("Oid", selectedObject.Oid));
+                openNewView(os, potrx, ViewEditMode.View);
+                showMsg("Successful", "Terminate Done.", InformationType.Success);
+            }
+            else
+            {
+                showMsg("Fail", "No blanket agreement Selected/More Than One blanket agreement Selected.", InformationType.Error);
+            }
+        }
+
+        private void TerminatePBA_CustomizePopupWindowParams(object sender, CustomizePopupWindowParamsEventArgs e)
         {
             IObjectSpace os = Application.CreateObjectSpace();
             DetailView dv = Application.CreateDetailView(os, os.CreateObject<StringParameters>(), true);

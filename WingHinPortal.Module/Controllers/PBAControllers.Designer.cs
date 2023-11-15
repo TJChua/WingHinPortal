@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.SubmitPBA = new DevExpress.ExpressApp.Actions.PopupWindowShowAction(this.components);
             this.CancelPBA = new DevExpress.ExpressApp.Actions.PopupWindowShowAction(this.components);
+            this.TerminatePBA = new DevExpress.ExpressApp.Actions.PopupWindowShowAction(this.components);
             // 
             // SubmitPBA
             // 
@@ -56,10 +57,23 @@
             this.CancelPBA.CustomizePopupWindowParams += new DevExpress.ExpressApp.Actions.CustomizePopupWindowParamsEventHandler(this.CancelPBA_CustomizePopupWindowParams);
             this.CancelPBA.Execute += new DevExpress.ExpressApp.Actions.PopupWindowShowActionExecuteEventHandler(this.CancelPBA_Execute);
             // 
+            // TerminatePBA
+            // 
+            this.TerminatePBA.AcceptButtonCaption = null;
+            this.TerminatePBA.CancelButtonCaption = null;
+            this.TerminatePBA.Caption = "Terminate";
+            this.TerminatePBA.Category = "ObjectsCreation";
+            this.TerminatePBA.ConfirmationMessage = null;
+            this.TerminatePBA.Id = "TerminatePBA";
+            this.TerminatePBA.ToolTip = null;
+            this.TerminatePBA.CustomizePopupWindowParams += new DevExpress.ExpressApp.Actions.CustomizePopupWindowParamsEventHandler(this.TerminatePBA_CustomizePopupWindowParams);
+            this.TerminatePBA.Execute += new DevExpress.ExpressApp.Actions.PopupWindowShowActionExecuteEventHandler(this.TerminatePBA_Execute);
+            // 
             // PBAControllers
             // 
             this.Actions.Add(this.SubmitPBA);
             this.Actions.Add(this.CancelPBA);
+            this.Actions.Add(this.TerminatePBA);
 
         }
 
@@ -67,5 +81,6 @@
 
         private DevExpress.ExpressApp.Actions.PopupWindowShowAction SubmitPBA;
         private DevExpress.ExpressApp.Actions.PopupWindowShowAction CancelPBA;
+        private DevExpress.ExpressApp.Actions.PopupWindowShowAction TerminatePBA;
     }
 }

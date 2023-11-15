@@ -161,7 +161,7 @@ namespace WingHinPortal.Module.BusinessObjects.PO
         private vwVendors _VendorCode;
         [NoForeignKey]
         [ImmediatePostData]
-        [DataSourceCriteria("ValidFor = 'Y'")]
+        [DataSourceCriteria("ValidFor = 'Y' and Expenditure = '@this.ExpenditureType.ExpenditureTypeCode'")]
         [XafDisplayName("Vendor Code")]
         [RuleRequiredField(DefaultContexts.Save)]
         [Index(5), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
@@ -229,7 +229,7 @@ namespace WingHinPortal.Module.BusinessObjects.PO
         private ExpenditureType _ExpenditureType;
         [ImmediatePostData]
         [DataSourceCriteria("IsActive = 'True'")]
-        [XafDisplayName("ExpenditureType")]
+        [XafDisplayName("Expenditure Type")]
         [Index(11), VisibleInDetailView(true), VisibleInListView(true), VisibleInLookupListView(true)]
         public ExpenditureType ExpenditureType
         {
@@ -305,6 +305,7 @@ namespace WingHinPortal.Module.BusinessObjects.PO
         }
 
         private CompanyAddress _CompanyAddress;
+        [XafDisplayName("Delivery Address")]
         [Index(23), VisibleInListView(false), VisibleInDetailView(true), VisibleInLookupListView(false)]
         [RuleRequiredField(DefaultContexts.Save)]
         public CompanyAddress CompanyAddress
@@ -313,6 +314,31 @@ namespace WingHinPortal.Module.BusinessObjects.PO
             set
             {
                 SetPropertyValue("CompanyAddress", ref _CompanyAddress, value);
+            }
+        }
+
+        private string _Attn;
+        [XafDisplayName("Attn")]
+        [Size(25000)]
+        [Index(25), VisibleInDetailView(true), VisibleInListView(false), VisibleInLookupListView(false)]
+        public string Attn
+        {
+            get { return _Attn; }
+            set
+            {
+                SetPropertyValue("Attn", ref _Attn, value);
+            }
+        }
+
+        private string _VehicleNo;
+        [XafDisplayName("Vehicle No")]
+        [Index(28), VisibleInDetailView(true), VisibleInListView(false), VisibleInLookupListView(false)]
+        public string VehicleNo
+        {
+            get { return _VehicleNo; }
+            set
+            {
+                SetPropertyValue("VehicleNo", ref _VehicleNo, value);
             }
         }
 
