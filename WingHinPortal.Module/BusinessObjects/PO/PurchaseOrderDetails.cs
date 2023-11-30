@@ -252,13 +252,25 @@ namespace WingHinPortal.Module.BusinessObjects.PO
                 SetPropertyValue("Discount", ref _Discount, value);
                 if (!IsLoading && value > 0)
                 {
-                    SubTotalWithoutTax = Quantity * Unitprice - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
-                    SubTotal = Quantity * Unitprice + TaxAmount - ((Discount/100) * (Quantity * Unitprice + TaxAmount));
+                    if (SubTotalWithoutTax != Quantity * Unitprice - ((Discount / 100) * (Quantity * Unitprice + TaxAmount)))
+                    {
+                        SubTotalWithoutTax = Quantity * Unitprice - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                    }
+                    if (SubTotal != Quantity * Unitprice + TaxAmount - ((Discount / 100) * (Quantity * Unitprice + TaxAmount)))
+                    {
+                        SubTotal = Quantity * Unitprice + TaxAmount - ((Discount / 100) * (Quantity * Unitprice + TaxAmount));
+                    }
                 }
                 if (!IsLoading && value <= 0)
                 {
-                    SubTotalWithoutTax = Quantity * Unitprice;
-                    SubTotal = Quantity * Unitprice + TaxAmount;
+                    if (SubTotalWithoutTax != Quantity * Unitprice)
+                    {
+                        SubTotalWithoutTax = Quantity * Unitprice;
+                    }
+                    if (SubTotal != Quantity * Unitprice + TaxAmount)
+                    {
+                        SubTotal = Quantity * Unitprice + TaxAmount;
+                    }
                 }
             }
         }
@@ -376,8 +388,9 @@ namespace WingHinPortal.Module.BusinessObjects.PO
         private decimal _SubTotal;
         [XafDisplayName("SubTotal")]
         [DbType("numeric(18,6)")]
+        [ImmediatePostData]
         [ModelDefault("DisplayFormat", "{0:n2}")]
-        [Appearance("SubTotal", Enabled = false)]
+        //[Appearance("SubTotal", Enabled = false)]
         [Index(25), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
         public decimal SubTotal
         {
@@ -385,6 +398,10 @@ namespace WingHinPortal.Module.BusinessObjects.PO
             set
             {
                 SetPropertyValue("SubTotal", ref _SubTotal, value);
+                if (!IsLoading && value != 0)
+                {
+                    Discount = ((Quantity * Unitprice + TaxAmount) - SubTotal) / (Quantity * Unitprice + TaxAmount) * 100;
+                }
             }
         }
 
