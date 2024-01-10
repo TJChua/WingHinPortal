@@ -945,12 +945,18 @@ namespace PortalIntegration
                         {
                             oDoc.Lines.ItemDetails = dtl.ItemDetails.ToString().ToUpper();
                         }
+                        //if (oTargetDoc.VehicleNo != null)
+                        //{
+                        //    oDoc.Lines.UserFields.Fields.Item("U_Ref2").Value = oTargetDoc.VehicleNo;
+                        //}
                         if (oTargetDoc.VehicleNo != null)
                         {
-                            oDoc.Lines.UserFields.Fields.Item("U_Ref2").Value = oTargetDoc.VehicleNo;
+                            oDoc.Lines.UserFields.Fields.Item("U_VehicleNum").Value = oTargetDoc.VehicleNo;
                         }
                         oDoc.Lines.Quantity = (double)dtl.Quantity;
-                        oDoc.Lines.UnitPrice = (double)dtl.Unitprice;
+                        //oDoc.Lines.UnitPrice = (double)dtl.Unitprice;
+                        oDoc.Lines.DiscountPercent = (double)dtl.Discount;
+                        oDoc.Lines.LineTotal = (double)dtl.SubTotal;
                     }
                     if (oTargetDoc.PurchaseOrderAttachment != null && oTargetDoc.PurchaseOrderAttachment.Count > 0)
                     {
@@ -1389,7 +1395,10 @@ namespace PortalIntegration
 
                             oDoc.Lines.ItemCode = dtl.Item.ItemCode;
                             oDoc.Lines.ItemDescription = dtl.ItemDesc;
-                            oDoc.Lines.ItemDetails = dtl.ItemDetails.ToString().ToUpper();
+                            if (dtl.ItemDetails != null)
+                            {
+                                oDoc.Lines.ItemDetails = dtl.ItemDetails.ToString().ToUpper();
+                            }
                             oDoc.Lines.Quantity = (double)dtl.Quantity;
                         }
                     }

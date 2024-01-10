@@ -84,5 +84,9 @@ namespace WingHinPortal.Module.BusinessObjects.View
         [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
         [Appearance("PortalDocNum", Enabled = false)]
         public string PortalDocNum { get; set; }
+
+        [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(true)]
+        [Appearance("PostingDate", Enabled = false)]
+        public DateTime PostingDate { get; set; }
     }
 }
