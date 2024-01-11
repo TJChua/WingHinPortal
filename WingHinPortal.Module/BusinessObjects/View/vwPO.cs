@@ -104,5 +104,9 @@ namespace WingHinPortal.Module.BusinessObjects.View
         [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
         [Appearance("PortalDocNum", Enabled = false)]
         public string PortalDocNum { get; set; }
+
+        [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
+        [Appearance("Vehicle", Enabled = false)]
+        public string Vehicle { get; set; }
     }
 }

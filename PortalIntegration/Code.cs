@@ -949,9 +949,9 @@ namespace PortalIntegration
                         //{
                         //    oDoc.Lines.UserFields.Fields.Item("U_Ref2").Value = oTargetDoc.VehicleNo;
                         //}
-                        if (oTargetDoc.VehicleNo != null)
+                        if (dtl.Vehicle != null)
                         {
-                            oDoc.Lines.UserFields.Fields.Item("U_VehicleNum").Value = oTargetDoc.VehicleNo;
+                            oDoc.Lines.UserFields.Fields.Item("U_VehicleNum").Value = dtl.Vehicle;
                         }
                         oDoc.Lines.Quantity = (double)dtl.Quantity;
                         //oDoc.Lines.UnitPrice = (double)dtl.Unitprice;
@@ -1174,6 +1174,10 @@ namespace PortalIntegration
                             if (dtl.ItemDetails != null)
                             {
                                 oDoc.Lines.ItemDetails = dtl.ItemDetails.ToString().ToUpper();
+                            }
+                            if (dtl.Vehicle != null)
+                            {
+                                oDoc.Lines.UserFields.Fields.Item("U_VehicleNum").Value = dtl.Vehicle;
                             }
                             oDoc.Lines.Quantity = (double)dtl.Quantity;// * (double)link.Packsize;
                             oDoc.Lines.UnitPrice = (double)dtl.Unitprice;// / oDoc.Lines.Quantity;

@@ -159,6 +159,18 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
             }
         }
 
+        private string _Vehicle;
+        [XafDisplayName("Vehicle")]
+        [Index(7), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
+        public string Vehicle
+        {
+            get { return _Vehicle; }
+            set
+            {
+                SetPropertyValue("Vehicle", ref _Vehicle, value);
+            }
+        }
+
         private decimal _Quantity;
         [ImmediatePostData]
         [DbType("numeric(18,6)")]

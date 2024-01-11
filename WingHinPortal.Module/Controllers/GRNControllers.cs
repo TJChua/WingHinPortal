@@ -238,6 +238,7 @@ namespace WingHinPortal.Module.Controllers
                         newGRNItem.BaseDoc = dtl.DocNum;
                         newGRNItem.BaseOid = dtl.Baseline.ToString();
                         newGRNItem.BaseEntry = dtl.BaseEntry;
+                        newGRNItem.Vehicle = dtl.Vehicle;
                         newGRNItem.CostCenter = newGRNItem.Session.FindObject<vwCostCenter>(CriteriaOperator.Parse("PrcCode = ?", dtl.CostCenter));
 
                         newgrn.GoodsReceiptDetails.Add(newGRNItem);
