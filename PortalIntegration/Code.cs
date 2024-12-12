@@ -954,9 +954,9 @@ namespace PortalIntegration
                             oDoc.Lines.UserFields.Fields.Item("U_VehicleNum").Value = dtl.Vehicle;
                         }
                         oDoc.Lines.Quantity = (double)dtl.Quantity;
-                        //oDoc.Lines.UnitPrice = (double)dtl.Unitprice;
+                        oDoc.Lines.UnitPrice = (double)dtl.Unitprice;
                         oDoc.Lines.DiscountPercent = (double)dtl.Discount;
-                        oDoc.Lines.LineTotal = (double)dtl.SubTotal;
+                        //oDoc.Lines.LineTotal = (double)dtl.SubTotal;
                     }
                     if (oTargetDoc.PurchaseOrderAttachment != null && oTargetDoc.PurchaseOrderAttachment.Count > 0)
                     {
@@ -1180,7 +1180,7 @@ namespace PortalIntegration
                                 oDoc.Lines.UserFields.Fields.Item("U_VehicleNum").Value = dtl.Vehicle;
                             }
                             oDoc.Lines.Quantity = (double)dtl.Quantity;// * (double)link.Packsize;
-                            oDoc.Lines.UnitPrice = (double)dtl.Unitprice;// / oDoc.Lines.Quantity;
+                            oDoc.Lines.UnitPrice = (double)dtl.POPrice;// / oDoc.Lines.Quantity;
 
                         }
 

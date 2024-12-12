@@ -231,7 +231,7 @@ namespace WingHinPortal.Module.BusinessObjects.PurchaseBlanketAgreement
         [ImmediatePostData]
         [DbType("numeric(18,6)")]
         [ModelDefault("DisplayFormat", "{0:n2}")]
-        [XafDisplayName("Discount")]
+        [XafDisplayName("Discount %")]
         [Index(10), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
         public decimal Discount
         {

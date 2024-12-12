@@ -108,5 +108,11 @@ namespace WingHinPortal.Module.BusinessObjects.View
         [VisibleInLookupListView(false), VisibleInListView(false), VisibleInDetailView(false)]
         [Appearance("Vehicle", Enabled = false)]
         public string Vehicle { get; set; }
+
+        [VisibleInLookupListView(true), VisibleInListView(true), VisibleInDetailView(true)]
+        [Appearance("OriPrice", Enabled = false)]
+        [DbType("numeric(18,6)")]
+        [ModelDefault("DisplayFormat", "{0:n2}")]
+        public decimal OriPrice { get; set; }
     }
 }

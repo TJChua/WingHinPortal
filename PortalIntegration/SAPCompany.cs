@@ -48,10 +48,10 @@ namespace PortalIntegration
             {
                 oCom.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_MSSQL2017;
             }
-            //else if (dbServerType == "MSSQL2019")
-            //{
-            //    oCom.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_MSSQL2019;
-            //}
+            else if (dbServerType == "MSSQL2019")
+            {
+                oCom.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_MSSQL2019;
+            }
             else if (dbServerType == "HANADB")
             {
                 oCom.DbServerType = SAPbobsCOM.BoDataServerTypes.dst_HANADB;
@@ -66,7 +66,7 @@ namespace PortalIntegration
             oCom.CompanyDB = ConfigurationManager.AppSettings.Get("CompanyDB");
             oCom.UserName = ConfigurationManager.AppSettings.Get("UserName");
             oCom.Password = ConfigurationManager.AppSettings.Get("Password");
-            oCom.LicenseServer = ConfigurationManager.AppSettings.Get("LicenseServer");
+            //oCom.LicenseServer = ConfigurationManager.AppSettings.Get("LicenseServer");
             oCom.language = SAPbobsCOM.BoSuppLangs.ln_English;
 
             if (oCom.Connect() != 0)

@@ -234,7 +234,8 @@ namespace WingHinPortal.Module.Controllers
                         newGRNItem.ItemDetails = dtl.ItemDetails;
                         newGRNItem.OpenQuantity = dtl.Quantity;
                         newGRNItem.Quantity = dtl.Quantity;
-                        newGRNItem.Unitprice = dtl.Unitprice;
+                        newGRNItem.Unitprice = dtl.OriPrice;
+                        newGRNItem.POPrice = dtl.Unitprice;
                         newGRNItem.BaseDoc = dtl.DocNum;
                         newGRNItem.BaseOid = dtl.Baseline.ToString();
                         newGRNItem.BaseEntry = dtl.BaseEntry;

@@ -233,7 +233,7 @@ namespace WingHinPortal.Module.BusinessObjects.PR
         [ImmediatePostData]
         [DbType("numeric(18,6)")]
         [ModelDefault("DisplayFormat", "{0:n2}")]
-        [XafDisplayName("Discount")]
+        [XafDisplayName("Discount %")]
         [Index(9), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
         public decimal Discount
         {

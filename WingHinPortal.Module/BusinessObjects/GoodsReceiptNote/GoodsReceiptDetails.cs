@@ -176,6 +176,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
         [DbType("numeric(18,6)")]
         [ModelDefault("DisplayFormat", "{0:n2}")]
         [XafDisplayName("Quantity")]
+        [Appearance("Quantity", Enabled = false)]
         [Index(8), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
         public decimal Quantity
         {
@@ -216,6 +217,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
         [XafDisplayName("Unit Price")]
         [DbType("numeric(18,6)")]
         [ModelDefault("DisplayFormat", "{0:n2}")]
+        [Appearance("Unitprice", Enabled = false)]
         [Index(10), VisibleInListView(true), VisibleInDetailView(true), VisibleInLookupListView(true)]
         public decimal Unitprice
         {
@@ -229,6 +231,20 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
                     SubTotalWithoutTax = Quantity * Unitprice;
                     SubTotal = Quantity * Unitprice + TaxAmount;
                 }
+            }
+        }
+
+        private decimal _POPrice;
+        [XafDisplayName("POPrice")]
+        [DbType("numeric(18,6)")]
+        [ModelDefault("DisplayFormat", "{0:n2}")]
+        [Index(11), VisibleInListView(false), VisibleInDetailView(false), VisibleInLookupListView(false)]
+        public decimal POPrice
+        {
+            get { return _POPrice; }
+            set
+            {
+                SetPropertyValue("POPrice", ref _POPrice, value);
             }
         }
 
