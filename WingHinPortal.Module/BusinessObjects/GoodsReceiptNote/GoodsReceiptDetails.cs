@@ -235,9 +235,10 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
         }
 
         private decimal _POPrice;
-        [XafDisplayName("POPrice")]
+        [XafDisplayName("PO Price")]
         [DbType("numeric(18,6)")]
         [ModelDefault("DisplayFormat", "{0:n2}")]
+        [Appearance("POPrice", Enabled = false)]
         [Index(11), VisibleInListView(false), VisibleInDetailView(false), VisibleInLookupListView(false)]
         public decimal POPrice
         {

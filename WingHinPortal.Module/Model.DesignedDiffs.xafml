@@ -387,22 +387,23 @@
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
           <LayoutGroup Id="SimpleEditors" RelativeSize="100" Direction="Horizontal">
-            <LayoutGroup Id="GoodsReceiptDetails_col1" ShowCaption="False" Index="0" RelativeSize="49.518569463548829" IsNewNode="True">
-              <LayoutItem Id="ItemGroup" ViewItem="ItemGroup" Index="0" RelativeSize="6.7669172932330826" IsNewNode="True" />
-              <LayoutItem Id="Item" ViewItem="Item" Index="1" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="ItemDesc" ViewItem="ItemDesc" Index="2" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="ItemDetails" ViewItem="ItemDetails" Index="3" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="UOM" ViewItem="UOM" Index="4" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="CostCenter" ViewItem="CostCenter" Index="5" RelativeSize="73.6842105263158" IsNewNode="True" />
+            <LayoutGroup Id="GoodsReceiptDetails_col1" ShowCaption="False" Index="0" RelativeSize="49.453551912568308" IsNewNode="True">
+              <LayoutItem Id="ItemGroup" ViewItem="ItemGroup" Index="0" RelativeSize="7.8260869565217392" IsNewNode="True" />
+              <LayoutItem Id="Item" ViewItem="Item" Index="1" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="ItemDesc" ViewItem="ItemDesc" Index="2" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="ItemDetails" ViewItem="ItemDetails" Index="3" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="UOM" ViewItem="UOM" Index="4" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="CostCenter" ViewItem="CostCenter" Index="5" RelativeSize="69.565217391304344" IsNewNode="True" />
             </LayoutGroup>
-            <LayoutGroup Id="GoodsReceiptDetails_col2" ShowCaption="False" Index="1" RelativeSize="50.481430536451171" IsNewNode="True">
-              <LayoutItem Id="Quantity" ViewItem="Quantity" Index="0" RelativeSize="6.7669172932330826" IsNewNode="True" />
-              <LayoutItem Id="Unitprice" ViewItem="Unitprice" Index="1" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="Tax" ViewItem="Tax" Index="2" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="TaxRate" ViewItem="TaxRate" Index="3" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="TaxAmount" ViewItem="TaxAmount" Index="4" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="SubTotalWithoutTax" ViewItem="SubTotalWithoutTax" Index="5" RelativeSize="4.8872180451127818" IsNewNode="True" />
-              <LayoutItem Id="SubTotal" ViewItem="SubTotal" Index="6" RelativeSize="68.796992481203" IsNewNode="True" />
+            <LayoutGroup Id="GoodsReceiptDetails_col2" ShowCaption="False" Index="1" RelativeSize="50.546448087431692" IsNewNode="True">
+              <LayoutItem Id="Quantity" ViewItem="Quantity" Index="0" RelativeSize="7.8260869565217392" IsNewNode="True" />
+              <LayoutItem Id="POPrice" ViewItem="POPrice" Index="1" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="Unitprice" ViewItem="Unitprice" Index="2" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="Tax" ViewItem="Tax" Index="3" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="TaxRate" ViewItem="TaxRate" Index="4" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="TaxAmount" ViewItem="TaxAmount" Index="5" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="SubTotalWithoutTax" ViewItem="SubTotalWithoutTax" Index="6" RelativeSize="5.6521739130434785" IsNewNode="True" />
+              <LayoutItem Id="SubTotal" ViewItem="SubTotal" Index="7" RelativeSize="58.260869565217391" IsNewNode="True" />
             </LayoutGroup>
             <LayoutGroup Id="GoodsReceiptDetails" RelativeSize="100" Removed="True">
               <LayoutGroup Id="GoodsReceiptDetails_col1" RelativeSize="49.927849927849927">
