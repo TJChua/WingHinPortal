@@ -331,6 +331,7 @@ namespace PortalIntegration
                                         {
                                             newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
                                             newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.ItemDetails = dtl.ItemDetails;
                                             newPOItem.Unitprice = dtl.Unitprice;
                                             if (dtl.ExpenditureType != null)
                                             {
@@ -447,6 +448,7 @@ namespace PortalIntegration
                                         {
                                             newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
                                             newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.ItemDetails = dtl.ItemDetails;
                                             newPOItem.Unitprice = dtl.Unitprice;
                                             if (dtl.ExpenditureType != null)
                                             {
@@ -563,6 +565,7 @@ namespace PortalIntegration
                                         {
                                             newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
                                             newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.ItemDetails = dtl.ItemDetails;
                                             newPOItem.Unitprice = dtl.Unitprice;
                                             if (dtl.ExpenditureType != null)
                                             {
@@ -679,6 +682,7 @@ namespace PortalIntegration
                                         {
                                             newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
                                             newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.ItemDetails = dtl.ItemDetails;
                                             newPOItem.Unitprice = dtl.Unitprice;
                                             if (dtl.ExpenditureType != null)
                                             {
@@ -765,6 +769,7 @@ namespace PortalIntegration
                                             PurchaseOrderDetails newPOItem = addos.CreateObject<PurchaseOrderDetails>();
                                             newPOItem.Item = addos.FindObject<vwItemMasters>(CriteriaOperator.Parse("ItemCode = ?", dtl.Item.ItemCode));
                                             newPOItem.ItemDesc = dtl.ItemDesc;
+                                            newPOItem.ItemDetails = dtl.ItemDetails;
                                             newPOItem.Unitprice = dtl.Unitprice;
                                             if (dtl.ExpenditureType != null)
                                             {
