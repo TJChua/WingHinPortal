@@ -200,12 +200,19 @@ namespace WingHinPortal.Module.BusinessObjects.PO
                 SetPropertyValue("Quantity", ref _Quantity, value);
                 if (!IsLoading)
                 {
-                    if (OpenQuantity > 0)
+                    if (BaseOid != null)
                     {
-                        if (Quantity > OpenQuantity)
+                        if (OpenQuantity > 0)
                         {
-                            Quantity = OpenQuantity;
+                            if (Quantity > OpenQuantity)
+                            {
+                                Quantity = OpenQuantity;
+                            }
                         }
+                    }
+                    else
+                    {
+                        OpenQuantity = Quantity;
                     }
 
                     TaxAmount = (Quantity * Unitprice) * (TaxRate / 100);
