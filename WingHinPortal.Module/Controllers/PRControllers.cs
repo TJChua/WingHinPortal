@@ -200,6 +200,20 @@ namespace WingHinPortal.Module.Controllers
                 {
                     if (genCon.SendEmail(emailsubject, emailbody, ToEmails) == 1)
                     {
+                        foreach (string ToEmail in ToEmails)
+                        {
+                            string INSEmailLog = "INSERT INTO EmailLog VALUES (GETDATE(), '" + ToEmail + "', '" + emailsubject + "', " +
+                            "'" + emailbody + "', 'GetApproval', 'PurchaseRequest', '" + selectedObject.DocNum + "')";
+                            if (conn.State == ConnectionState.Open)
+                            {
+                                conn.Close();
+                            }
+                            conn.Open();
+                            SqlCommand cmdlog = new SqlCommand(INSEmailLog, conn);
+                            SqlDataReader readerlog = cmdlog.ExecuteReader();
+                            cmdlog.Dispose();
+                            conn.Close();
+                        }
                     }
                 }
 
@@ -369,6 +383,20 @@ namespace WingHinPortal.Module.Controllers
                         {
                             if (genCon.SendEmail(emailsubject, emailbody, ToEmails) == 1)
                             {
+                                foreach (string ToEmail in ToEmails)
+                                {
+                                    string INSEmailLog = "INSERT INTO EmailLog VALUES (GETDATE(), '" + ToEmail + "', '" + emailsubject + "', " +
+                                    "'" + emailbody + "', 'Approval', 'PurchaseRequest', '" + pr.DocNum + "')";
+                                    if (conn.State == ConnectionState.Open)
+                                    {
+                                        conn.Close();
+                                    }
+                                    conn.Open();
+                                    SqlCommand cmdlog = new SqlCommand(INSEmailLog, conn);
+                                    SqlDataReader readerlog = cmdlog.ExecuteReader();
+                                    cmdlog.Dispose();
+                                    conn.Close();
+                                }
                             }
                         }
                         #endregion
@@ -499,6 +527,20 @@ namespace WingHinPortal.Module.Controllers
                         {
                             if (genCon.SendEmail(emailsubject, emailbody, ToEmails) == 1)
                             {
+                                foreach (string ToEmail in ToEmails)
+                                {
+                                    string INSEmailLog = "INSERT INTO EmailLog VALUES (GETDATE(), '" + ToEmail + "', '" + emailsubject + "', " +
+                                    "'" + emailbody + "', 'Approval', 'PurchaseRequest', '" + pr.DocNum + "')";
+                                    if (conn.State == ConnectionState.Open)
+                                    {
+                                        conn.Close();
+                                    }
+                                    conn.Open();
+                                    SqlCommand cmdlog = new SqlCommand(INSEmailLog, conn);
+                                    SqlDataReader readerlog = cmdlog.ExecuteReader();
+                                    cmdlog.Dispose();
+                                    conn.Close();
+                                }
                             }
                         }
                         #endregion
