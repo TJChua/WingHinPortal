@@ -29,7 +29,7 @@ namespace WingHinPortal.Module.BusinessObjects.PR
     [Appearance("HideEdit", AppearanceItemType.Action, "True", TargetItems = "SwitchToEditMode; Edit", Criteria = "not (DocStatus in (0))", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
     [Appearance("HideDelete", AppearanceItemType.Action, "True", TargetItems = "Delete", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
     [Appearance("HideSubmit", AppearanceItemType.Action, "True", TargetItems = "SubmitPR", Criteria = "not (DocStatus in (0))", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
-    [Appearance("HideCancel", AppearanceItemType.Action, "True", TargetItems = "CancelPR", Criteria = "not (DocStatus in (0))", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
+    [Appearance("HideCancel", AppearanceItemType.Action, "True", TargetItems = "CancelPR", Criteria = "(not (DocStatus in (0)) and ApprovalStatus != 'Approved') or (IsValid1 and not (DocStatus in (0)) and ApprovalStatus = 'Approved')", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide, Context = "Any")]
     [Appearance("HideApproval", AppearanceItemType = "Action", TargetItems = "ApprovePR", Criteria = "(ApprovalStatus != 'Required_Approval')", Context = "Any", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide)]
     [Appearance("HideApproval1", AppearanceItemType = "Action", TargetItems = "ApprovePR", Context = "PurchaseRequest_DetailView", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide)]
     [Appearance("HideApproval2", AppearanceItemType = "Action", TargetItems = "ApprovePR", Context = "PurchaseRequest_DetailView_Approved", Visibility = DevExpress.ExpressApp.Editors.ViewItemVisibility.Hide)]
@@ -449,6 +449,20 @@ namespace WingHinPortal.Module.BusinessObjects.PR
                 {
                     return false;
                 }
+            }
+        }
+
+        [Browsable(false)]
+        public bool IsValid1
+        {
+            get
+            {
+                if (this.PurchaseRequestDetail.Where(x => x.OpenQuantity != x.Quantity).Count() > 0)
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
 
