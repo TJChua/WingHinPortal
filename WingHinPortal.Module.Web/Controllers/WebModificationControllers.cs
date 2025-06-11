@@ -198,12 +198,14 @@ namespace WingHinPortal.Module.Web.Controllers
                 GoodsReceipt newGRN = (GoodsReceipt)args.CurrentObject;
                 if (newGRN.IsNew == true)
                 {
-                    if (newGRN.IsValid == false)
-                    {
-                        showMsg("Error", "Please attach at least 1 documents.", InformationType.Error);
-                    }
-                    else
-                    {
+                    // Start TJC 2025/06/11
+                    //if (newGRN.IsValid == false)
+                    //{
+                    //    showMsg("Error", "Please attach at least 1 documents.", InformationType.Error);
+                    //}
+                    //else
+                    //{
+                    // End TJC 2025/06/11
                         base.Save(args);
 
                         IObjectSpace os = Application.CreateObjectSpace();
@@ -245,21 +247,27 @@ namespace WingHinPortal.Module.Web.Controllers
                         ((DetailView)View).ViewEditMode = ViewEditMode.View;
                         View.BreakLinksToControls();
                         View.CreateControls();
-                    }
+                    // Start TJC 2025/06/11
+                    //}
+                    // End TJC 2025/06/11
                 }
                 else
                 {
-                    if (newGRN.IsValid == false)
-                    {
-                        showMsg("Error", "Please attach at least 1 documents.", InformationType.Error);
-                    }
-                    else
-                    {
+                    // Start TJC 2025/06/11
+                    //if (newGRN.IsValid == false)
+                    //{
+                    //    showMsg("Error", "Please attach at least 1 documents.", InformationType.Error);
+                    //}
+                    //else
+                    //{
+                    // End TJC 2025/06/11
                         base.Save(args);
                         ((DetailView)View).ViewEditMode = ViewEditMode.View;
                         View.BreakLinksToControls();
                         View.CreateControls();
-                    }
+                    // Start TJC 2025/06/11
+                    //}
+                    // End TJC 2025/06/11
                 }
             }
             else if (View.ObjectTypeInfo.Type == typeof(GoodsIssue))
