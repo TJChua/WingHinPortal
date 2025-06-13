@@ -391,7 +391,7 @@ namespace WingHinPortal.Module.BusinessObjects.PurchaseBlanketAgreement
 
         private string _Remarks;
         [XafDisplayName("Remarks")]
-        [Size(25000)]
+        [Size(254)]
         [Appearance("Remarks", Enabled = false, Criteria = "(DocStatus in (1))")]
         [Index(81), VisibleInDetailView(true), VisibleInListView(false), VisibleInLookupListView(false)]
         public string Remarks

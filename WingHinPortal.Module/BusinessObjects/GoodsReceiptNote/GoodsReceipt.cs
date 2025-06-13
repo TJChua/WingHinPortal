@@ -324,7 +324,7 @@ namespace WingHinPortal.Module.BusinessObjects.GoodsReceipt
 
         private string _Remarks;
         [XafDisplayName("Remarks")]
-        [Size(25000)]
+        [Size(254)]
         [Index(81), VisibleInDetailView(true), VisibleInListView(false), VisibleInLookupListView(false)]
         public string Remarks
         {
