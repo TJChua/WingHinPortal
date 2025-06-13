@@ -321,6 +321,9 @@
       </Columns>
     </ListView>
     <DetailView Id="GoodsReceipt_DetailView">
+      <Items>
+        <PropertyEditor Id="CompanyAddress" LookupEditorMode="AllItemsWithSearch" />
+      </Items>
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
           <LayoutGroup Id="SimpleEditors" RelativeSize="49.436090225563909">
@@ -427,6 +430,9 @@
     </DetailView>
     <ListView Id="PurchaseBlanketAgreement_AuditTrail_ListView" AllowDelete="False" AllowLink="False" AllowNew="False" />
     <DetailView Id="PurchaseBlanketAgreement_DetailView">
+      <Items>
+        <PropertyEditor Id="CompanyAddress" LookupEditorMode="AllItemsWithSearch" />
+      </Items>
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
           <LayoutGroup Id="SimpleEditors" RelativeSize="42.4812030075188" Direction="Horizontal">
@@ -604,6 +610,9 @@
       </Columns>
     </ListView>
     <DetailView Id="PurchaseOrders_DetailView">
+      <Items>
+        <PropertyEditor Id="CompanyAddress" LookupEditorMode="AllItemsWithSearch" />
+      </Items>
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
           <LayoutGroup Id="SimpleEditors" RelativeSize="61.702127659574465" Direction="Horizontal">
@@ -679,7 +688,7 @@
         <PropertyEditor Id="AppUser" PropertyName="AppUser" IsNewNode="True" />
         <PropertyEditor Id="Attn" PropertyName="Attn" IsNewNode="True" />
         <PropertyEditor Id="AuditTrail" PropertyName="AuditTrail" View="PurchaseOrders_AuditTrail_ListView" IsNewNode="True" />
-        <PropertyEditor Id="CompanyAddress" PropertyName="CompanyAddress" IsNewNode="True" />
+        <PropertyEditor Id="CompanyAddress" PropertyName="CompanyAddress" LookupEditorMode="AllItemsWithSearch" IsNewNode="True" />
         <PropertyEditor Id="CreateDate" PropertyName="CreateDate" IsNewNode="True" />
         <PropertyEditor Id="CreateUser" PropertyName="CreateUser" IsNewNode="True" />
         <PropertyEditor Id="Department" PropertyName="Department" IsNewNode="True" />
@@ -760,7 +769,7 @@
         <PropertyEditor Id="AppUser" PropertyName="AppUser" IsNewNode="True" />
         <PropertyEditor Id="Attn" PropertyName="Attn" IsNewNode="True" />
         <PropertyEditor Id="AuditTrail" PropertyName="AuditTrail" View="PurchaseOrders_AuditTrail_ListView" IsNewNode="True" />
-        <PropertyEditor Id="CompanyAddress" PropertyName="CompanyAddress" IsNewNode="True" />
+        <PropertyEditor Id="CompanyAddress" PropertyName="CompanyAddress" LookupEditorMode="AllItemsWithSearch" IsNewNode="True" />
         <PropertyEditor Id="CreateDate" PropertyName="CreateDate" IsNewNode="True" />
         <PropertyEditor Id="CreateUser" PropertyName="CreateUser" IsNewNode="True" />
         <PropertyEditor Id="Department" PropertyName="Department" IsNewNode="True" />
@@ -905,6 +914,9 @@
       </Columns>
     </ListView>
     <DetailView Id="PurchaseRequest_DetailView">
+      <Items>
+        <PropertyEditor Id="CompanyAddress" LookupEditorMode="AllItemsWithSearch" />
+      </Items>
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
           <LayoutGroup Id="SimpleEditors" RelativeSize="58.835341365461851" Direction="Horizontal">
@@ -986,7 +998,7 @@
         <PropertyEditor Id="AppUser" PropertyName="AppUser" IsNewNode="True" />
         <PropertyEditor Id="Attn" PropertyName="Attn" IsNewNode="True" />
         <PropertyEditor Id="AuditTrail" PropertyName="AuditTrail" View="PurchaseRequest_AuditTrail_ListView" IsNewNode="True" />
-        <PropertyEditor Id="CompanyAddress" PropertyName="CompanyAddress" IsNewNode="True" />
+        <PropertyEditor Id="CompanyAddress" PropertyName="CompanyAddress" LookupEditorMode="AllItemsWithSearch" IsNewNode="True" />
         <PropertyEditor Id="CreateDate" PropertyName="CreateDate" IsNewNode="True" />
         <PropertyEditor Id="CreateUser" PropertyName="CreateUser" IsNewNode="True" />
         <PropertyEditor Id="Department" PropertyName="Department" IsNewNode="True" />
@@ -1068,7 +1080,7 @@
         <PropertyEditor Id="AppUser" PropertyName="AppUser" IsNewNode="True" />
         <PropertyEditor Id="Attn" PropertyName="Attn" IsNewNode="True" />
         <PropertyEditor Id="AuditTrail" PropertyName="AuditTrail" View="PurchaseRequest_AuditTrail_ListView" IsNewNode="True" />
-        <PropertyEditor Id="CompanyAddress" PropertyName="CompanyAddress" IsNewNode="True" />
+        <PropertyEditor Id="CompanyAddress" PropertyName="CompanyAddress" LookupEditorMode="AllItemsWithSearch" IsNewNode="True" />
         <PropertyEditor Id="CreateDate" PropertyName="CreateDate" IsNewNode="True" />
         <PropertyEditor Id="CreateUser" PropertyName="CreateUser" IsNewNode="True" />
         <PropertyEditor Id="Department" PropertyName="Department" IsNewNode="True" />
