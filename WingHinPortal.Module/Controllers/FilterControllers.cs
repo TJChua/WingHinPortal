@@ -42,8 +42,9 @@ namespace WingHinPortal.Module.Controllers
                 if (View.Id == "PurchaseRequest_ListView")
                 {
                     PermissionPolicyRole PRRole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('PRUserRole')"));
+                    PermissionPolicyRole SuperPRRole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('SuperPRRole')"));
 
-                    if (PRRole != null)
+                    if (PRRole != null && SuperPRRole == null)
                     {
                         ((ListView)View).CollectionSource.Criteria["Filter1"] = CriteriaOperator.Parse("[Department.Oid]=? or [CreateUser.Oid]=?",
                             user.Staff.StaffDepartment.Oid, user.Oid);
@@ -83,8 +84,9 @@ namespace WingHinPortal.Module.Controllers
                 if (View.Id == "PurchaseOrders_ListView")
                 {
                     PermissionPolicyRole PORole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('POUserRole')"));
+                    PermissionPolicyRole SuperPORole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('SuperPORole')"));
 
-                    if (PORole != null)
+                    if (PORole != null && SuperPORole == null)
                     {
                         ((ListView)View).CollectionSource.Criteria["Filter1"] = CriteriaOperator.Parse("[Department.Oid]=? or [CreateUser.Oid]=?",
                             user.Staff.StaffDepartment.Oid, user.Oid);

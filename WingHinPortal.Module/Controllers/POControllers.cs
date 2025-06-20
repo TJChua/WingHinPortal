@@ -304,128 +304,147 @@ namespace WingHinPortal.Module.Controllers
 
                 foreach (PurchaseOrders dtl in e.SelectedObjects)
                 {
+                    bool process = true;
                     IObjectSpace pos = Application.CreateObjectSpace();
                     PurchaseOrders po = pos.FindObject<PurchaseOrders>(new BinaryOperator("Oid", dtl.Oid));
 
+                    if (po.DocStatus == DocStatus.Submit && po.ApprovalStatus == ApprovalStatusType.Approved)
+                    {
+                        showMsg("Failed", "Document already approved, please refresh data.", InformationType.Error);
+                        process = false;
+                    }
+
                     if (po.NextApprover != null)
                     {
-                        po.WhoApprove = po.WhoApprove + user.Staff.StaffName + ", ";
-                        ApprovalStatusType appstatus = ApprovalStatusType.Required_Approval;
-
-                        if (appstatus == ApprovalStatusType.Not_Applicable)
-                            appstatus = ApprovalStatusType.Required_Approval;
-
-
-                        if (p.IsErr) return;
-                        if (appstatus == ApprovalStatusType.Required_Approval && p.AppStatus == ApprovalActions.NA)
+                        if (!po.NextApprover.Contains(user.Staff.StaffName))
                         {
-                            showMsg("Failed", "Same Approval Status is not allowed.", InformationType.Error);
-                            return;
+                            showMsg("Failed", "No allow approve document due to you are not the approver.", InformationType.Error);
+                            process = false;
                         }
-                        else if (appstatus == ApprovalStatusType.Approved && p.AppStatus == ApprovalActions.Yes)
-                        {
-                            showMsg("Failed", "Same Approval Status is not allowed.", InformationType.Error);
-                            return;
-                        }
-                        else if (appstatus == ApprovalStatusType.Rejected && p.AppStatus == ApprovalActions.No)
-                        {
-                            showMsg("Failed", "Same Approval Status is not allowed.", InformationType.Error);
-                            return;
-                        }
-                        if (p.AppStatus == ApprovalActions.NA)
-                        {
-                            appstatus = ApprovalStatusType.Required_Approval;
-                        }
-                        if (p.AppStatus == ApprovalActions.Yes)
-                        {
-                            appstatus = ApprovalStatusType.Approved;
-                        }
-                        if (p.AppStatus == ApprovalActions.No)
-                        {
-                            appstatus = ApprovalStatusType.Rejected;
-                        }
+                    }
 
-                        PurchaseOrderAppStatus ds = pos.CreateObject<PurchaseOrderAppStatus>();
-                        ds.PurchaseOrders = pos.GetObjectByKey<PurchaseOrders>(po.Oid);
-                        ds.AppStatus = appstatus;
-                        if (appstatus == ApprovalStatusType.Rejected)
+                    if (process == true)
+                    {
+                        if (po.NextApprover != null)
                         {
-                            po.DocStatus = DocStatus.New;
-                            ds.AppRemarks = p.ParamString +
-                                System.Environment.NewLine + "(Reject User: " + user.Staff.StaffName + ")" +
-                                System.Environment.NewLine + "(Reason: Approval Rejected)";
-                            ds.CreateUser = pos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
-                        }
-                        else
-                        {
-                            ds.AppRemarks = p.ParamString +
-                                System.Environment.NewLine + "(Approved User: " + user.Staff.StaffName + ")";
-                        }
-                        po.PurchaseOrderAppStatus.Add(ds);
+                            po.WhoApprove = po.WhoApprove + user.Staff.StaffName + ", ";
+                            ApprovalStatusType appstatus = ApprovalStatusType.Required_Approval;
 
-                        pos.CommitChanges();
-                        pos.Refresh();
+                            if (appstatus == ApprovalStatusType.Not_Applicable)
+                                appstatus = ApprovalStatusType.Required_Approval;
 
-                        totaldoc++;
 
-                        #region approval
-
-                        List<string> ToEmails = new List<string>();
-                        string emailbody = "";
-                        string emailsubject = "";
-                        string emailaddress = "";
-                        Guid emailuser;
-                        DateTime emailtime = DateTime.Now;
-
-                        string getapproval = "EXEC sp_Approval '" + user.UserName + "', '" + po.Oid + "', 'PurchaseOrders', " + ((int)appstatus);
-                        if (conn.State == ConnectionState.Open)
-                        {
-                            conn.Close();
-                        }
-                        conn.Open();
-                        SqlCommand cmd = new SqlCommand(getapproval, conn);
-                        SqlDataReader reader = cmd.ExecuteReader();
-                        while (reader.Read())
-                        {
-                            emailbody = "Dear Sir/Madam, " + System.Environment.NewLine + System.Environment.NewLine +
-                                      reader.GetString(3) + System.Environment.NewLine + GeneralSettings.appurl + reader.GetString(2) +
-                                      System.Environment.NewLine + System.Environment.NewLine +
-                                      "Regards" + System.Environment.NewLine +
-                                      "e-Proc Portal";
-
-                            if (appstatus == ApprovalStatusType.Approved)
-                                emailsubject = "Purchase Order Approval";
-                            else if (appstatus == ApprovalStatusType.Rejected)
-                                emailsubject = "Purchase Order Approval Rejected";
-
-                            emailaddress = reader.GetString(1);
-                            emailuser = reader.GetGuid(0);
-
-                            ToEmails.Add(emailaddress);
-                        }
-                        conn.Close();
-
-                        if (ToEmails.Count > 0)
-                        {
-                            if (genCon.SendEmail(emailsubject, emailbody, ToEmails) == 1)
+                            if (p.IsErr) return;
+                            if (appstatus == ApprovalStatusType.Required_Approval && p.AppStatus == ApprovalActions.NA)
                             {
-                                foreach (string ToEmail in ToEmails)
+                                showMsg("Failed", "Same Approval Status is not allowed.", InformationType.Error);
+                                return;
+                            }
+                            else if (appstatus == ApprovalStatusType.Approved && p.AppStatus == ApprovalActions.Yes)
+                            {
+                                showMsg("Failed", "Same Approval Status is not allowed.", InformationType.Error);
+                                return;
+                            }
+                            else if (appstatus == ApprovalStatusType.Rejected && p.AppStatus == ApprovalActions.No)
+                            {
+                                showMsg("Failed", "Same Approval Status is not allowed.", InformationType.Error);
+                                return;
+                            }
+                            if (p.AppStatus == ApprovalActions.NA)
+                            {
+                                appstatus = ApprovalStatusType.Required_Approval;
+                            }
+                            if (p.AppStatus == ApprovalActions.Yes)
+                            {
+                                appstatus = ApprovalStatusType.Approved;
+                            }
+                            if (p.AppStatus == ApprovalActions.No)
+                            {
+                                appstatus = ApprovalStatusType.Rejected;
+                            }
+
+                            PurchaseOrderAppStatus ds = pos.CreateObject<PurchaseOrderAppStatus>();
+                            ds.PurchaseOrders = pos.GetObjectByKey<PurchaseOrders>(po.Oid);
+                            ds.AppStatus = appstatus;
+                            if (appstatus == ApprovalStatusType.Rejected)
+                            {
+                                po.DocStatus = DocStatus.New;
+                                ds.AppRemarks = p.ParamString +
+                                    System.Environment.NewLine + "(Reject User: " + user.Staff.StaffName + ")" +
+                                    System.Environment.NewLine + "(Reason: Approval Rejected)";
+                                ds.CreateUser = pos.GetObjectByKey<SystemUsers>(Guid.Parse("2B9F40E0-BA80-4856-9848-917F00967CE5"));
+                            }
+                            else
+                            {
+                                ds.AppRemarks = p.ParamString +
+                                    System.Environment.NewLine + "(Approved User: " + user.Staff.StaffName + ")";
+                            }
+                            po.PurchaseOrderAppStatus.Add(ds);
+
+                            pos.CommitChanges();
+                            pos.Refresh();
+
+                            totaldoc++;
+
+                            #region approval
+
+                            List<string> ToEmails = new List<string>();
+                            string emailbody = "";
+                            string emailsubject = "";
+                            string emailaddress = "";
+                            Guid emailuser;
+                            DateTime emailtime = DateTime.Now;
+
+                            string getapproval = "EXEC sp_Approval '" + user.UserName + "', '" + po.Oid + "', 'PurchaseOrders', " + ((int)appstatus);
+                            if (conn.State == ConnectionState.Open)
+                            {
+                                conn.Close();
+                            }
+                            conn.Open();
+                            SqlCommand cmd = new SqlCommand(getapproval, conn);
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            while (reader.Read())
+                            {
+                                emailbody = "Dear Sir/Madam, " + System.Environment.NewLine + System.Environment.NewLine +
+                                          reader.GetString(3) + System.Environment.NewLine + GeneralSettings.appurl + reader.GetString(2) +
+                                          System.Environment.NewLine + System.Environment.NewLine +
+                                          "Regards" + System.Environment.NewLine +
+                                          "e-Proc Portal";
+
+                                if (appstatus == ApprovalStatusType.Approved)
+                                    emailsubject = "Purchase Order Approval";
+                                else if (appstatus == ApprovalStatusType.Rejected)
+                                    emailsubject = "Purchase Order Approval Rejected";
+
+                                emailaddress = reader.GetString(1);
+                                emailuser = reader.GetGuid(0);
+
+                                ToEmails.Add(emailaddress);
+                            }
+                            conn.Close();
+
+                            if (ToEmails.Count > 0)
+                            {
+                                if (genCon.SendEmail(emailsubject, emailbody, ToEmails) == 1)
                                 {
-                                    string INSEmailLog = "INSERT INTO EmailLog VALUES (GETDATE(), '" + ToEmail + "', '" + emailsubject + "', " +
-                                    "'" + emailbody + "', 'Approval', 'PurchaseOrder', '" + po.DocNum + "')";
-                                    if (conn.State == ConnectionState.Open)
+                                    foreach (string ToEmail in ToEmails)
                                     {
+                                        string INSEmailLog = "INSERT INTO EmailLog VALUES (GETDATE(), '" + ToEmail + "', '" + emailsubject + "', " +
+                                        "'" + emailbody + "', 'Approval', 'PurchaseOrder', '" + po.DocNum + "')";
+                                        if (conn.State == ConnectionState.Open)
+                                        {
+                                            conn.Close();
+                                        }
+                                        conn.Open();
+                                        SqlCommand cmdlog = new SqlCommand(INSEmailLog, conn);
+                                        SqlDataReader readerlog = cmdlog.ExecuteReader();
+                                        cmdlog.Dispose();
                                         conn.Close();
                                     }
-                                    conn.Open();
-                                    SqlCommand cmdlog = new SqlCommand(INSEmailLog, conn);
-                                    SqlDataReader readerlog = cmdlog.ExecuteReader();
-                                    cmdlog.Dispose();
-                                    conn.Close();
                                 }
                             }
+                            #endregion
                         }
-                        #endregion
                     }
 
                     //ObjectSpace.CommitChanges(); //This line persists created object(s).
@@ -452,6 +471,21 @@ namespace WingHinPortal.Module.Controllers
                 {
                     IObjectSpace pos = Application.CreateObjectSpace();
                     PurchaseOrders po = pos.FindObject<PurchaseOrders>(new BinaryOperator("Oid", dtl.Oid));
+
+                    if (po.DocStatus == DocStatus.Submit && po.ApprovalStatus == ApprovalStatusType.Approved)
+                    {
+                        showMsg("Failed", "Document already approved, please refresh data.", InformationType.Error);
+                        return;
+                    }
+
+                    if (po.NextApprover != null)
+                    {
+                        if (!po.NextApprover.Contains(user.Staff.StaffName))
+                        {
+                            showMsg("Failed", "No allow approve document due to you are not the approver.", InformationType.Error);
+                            return;
+                        }
+                    }
 
                     if (po.NextApprover != null)
                     {
