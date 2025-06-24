@@ -126,8 +126,9 @@ namespace WingHinPortal.Module.Controllers
                 if (View.Id == "GoodsReceipt_ListView")
                 {
                     PermissionPolicyRole GRNRole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('GRNUserRole')"));
+                    PermissionPolicyRole SuperGRNRole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('SuperGRNRole')"));
 
-                    if (GRNRole != null)
+                    if (GRNRole != null && SuperGRNRole == null)
                     {
                         ((ListView)View).CollectionSource.Criteria["Filter1"] = CriteriaOperator.Parse("[Department.Oid]=? or [CreateUser.Oid]=?",
                             user.Staff.StaffDepartment.Oid, user.Oid);
@@ -140,8 +141,9 @@ namespace WingHinPortal.Module.Controllers
                 if (View.Id == "GoodsIssue_ListView")
                 {
                     PermissionPolicyRole InvenRole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('InventoryUserRole')"));
+                    PermissionPolicyRole SuperInvenRole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('SuperInvenRole')"));
 
-                    if (InvenRole != null)
+                    if (InvenRole != null && SuperInvenRole == null)
                     {
                         ((ListView)View).CollectionSource.Criteria["Filter1"] = CriteriaOperator.Parse("[Department.Oid]=? or [CreateUser.Oid]=?",
                             user.Staff.StaffDepartment.Oid, user.Oid);
@@ -154,8 +156,9 @@ namespace WingHinPortal.Module.Controllers
                 if (View.Id == "PurchaseBlanketAgreement_ListView")
                 {
                     PermissionPolicyRole BlankerRole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('BlanketAgreementUserRole')"));
+                    PermissionPolicyRole SuperBlankerRole = ObjectSpace.FindObject<PermissionPolicyRole>(CriteriaOperator.Parse("IsCurrentUserInRole('SuperBlanketAgreementUserRole')"));
 
-                    if (BlankerRole != null)
+                    if (BlankerRole != null && SuperBlankerRole == null)
                     {
                         ((ListView)View).CollectionSource.Criteria["Filter1"] = CriteriaOperator.Parse("[Department.Oid]=? or [CreateUser.Oid]=?",
                             user.Staff.StaffDepartment.Oid, user.Oid);
